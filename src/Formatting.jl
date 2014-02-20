@@ -3,11 +3,10 @@ module Formatting
     import Base.show
 
     export 
-
-        # fmtspec
-        FormatSpec
+        FormatSpec, printfmt, fmt
 
 
     include("fmtspec.jl")
+    include("fmtcore.jl")
 
 end # module

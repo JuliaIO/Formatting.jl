@@ -17,8 +17,18 @@
 
 ## FormatSpec type
 
+const _numtypchars = Set('b', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 'x', 'X')
+
+_tycls(c::Char) = 
+    (c == 'd' || c == 'n' || c == 'b' || c == 'o' || c == 'x') ? 'i' :
+    (c == 'e' || c == 'f' || c == 'g') ? 'f' :
+    (c == 'c') ? 'c' :
+    (c == 's') ? 's' :
+    error("Invalid type char $(c)")
+
 immutable FormatSpec
     iarg::Int    # argument index
+    cls::Char    # category: 'i' | 'f' | 'c' | 's'
     typ::Char
     fill::Char    
     align::Char
@@ -30,7 +40,7 @@ immutable FormatSpec
     tsep::Bool   # whether to use thousand-separator
 
     function FormatSpec(iarg::Int, typ::Char;
-               fill::Char='\0', 
+               fill::Char=' ', 
                align::Char='\0',
                sign::Char='-',
                width::Int=-1,
@@ -42,13 +52,18 @@ immutable FormatSpec
         if align=='\0'
             align = (typ in _numtypchars) ? '>' : '<'
         end
-        new(iarg, typ, fill, align, sign, width, prec, ipre, zpad, tsep)
+        cls = _tycls(lowercase(typ))
+        if cls == 'f' && prec < 0
+            prec = 6
+        end
+        new(iarg, cls, typ, fill, align, sign, width, prec, ipre, zpad, tsep)
     end
 end
 
 function show(io::IO, fs::FormatSpec)
     println(io, "$(typeof(fs))")
     println(io, "  iarg  = $(fs.iarg)")
+    println(io, "  cls   = $(fs.cls)")
     println(io, "  typ   = $(fs.typ)")
     println(io, "  fill  = $(fs.fill)")
     println(io, "  align = $(fs.align)")
@@ -60,15 +75,13 @@ function show(io::IO, fs::FormatSpec)
     println(io, "  tsep  = $(fs.tsep)")
 end
 
-
 ## parse FormatSpec from a string
 
-const _numtypchars = Set('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 'x', 'X')
 const _spec_regex = r"^(.?[<>])?([ +-])?(#)?(\d+)?(,)?(.\d+)?([bcdeEfFgGnosxX])?$"
 
 function FormatSpec(iarg::Int, s::String)
     # default spec
-    _fill = '\0'
+    _fill = ' '
     _align = '\0'
     _sign = '-'
     _width = -1
@@ -147,18 +160,42 @@ end
 
 ## formatted printing using a format spec
 
+type _Dec end
+type _Oct end
+type _Hex end
+type _HEX end
+type _Bin end
+
+_srepr(x) = repr(x)
+_srepr(x::String) = x
+_srepr(x::Char) = string(x)
+
 function printfmt(io::IO, fs::FormatSpec, x)
+    cls = fs.cls
     ty = fs.typ
-    ty == 's' : _pfmt_s(io, fs, repr(x)) ?
-    ty == 'd' || ty == 'n' : _pfmt_d(io, fs, integer(x)) ?
-    ty == 'x' || ty == 'X' : _pfmt_x(io, fs, integer(x)) ?
-    ty == 'o' : _pfmt_o(io, fs, integer(x)) ?
-    ty == 'b' : _pfmt_b(io, fs, integer(x)) ?
-    ty == 'c' : _pfmt_c(io, fs, char(x)) ?
-    ty == 'e' || ty == 'E' : _pfmt_e(io, fs, float(x)) ?
-    ty == 'f' || ty == 'F' : _pfmt_f(io, fs, float(x)) ?
-    ty == 'g' || ty == 'G' : _pfmt_g(io, fs, float(x)) ?
-    error("Unknown formatting type $(ty)").
+    if cls == 'i'
+        ix = integer(x)
+        ty == 'd' || ty == 'n' ? _pfmt_i(io, fs, ix, _Dec()) :
+        ty == 'x' ? _pfmt_i(io, fs, ix, _Hex()) :
+        ty == 'X' ? _pfmt_i(io, fs, ix, _HEX()) :
+        ty == 'o' ? _pfmt_i(io, fs, ix, _Oct()) :
+        _pfmt_i(io, fs, ix, _Bin())  
+    elseif cls == 'f'
+        fx = float(x)
+        ty == 'f' || ty == 'F' ? _pfmt_f(io, fs, fx) :
+        ty == 'e' || ty == 'E' ? _pfmt_e(io, fs, fx) :
+        _pfmt_g(io, fs, fx)
+    elseif cls == 's'
+        _pfmt_s(io, fs, _srepr(x))
+    else # cls == 'c'
+        _pfmt_s(io, fs, char(x))
+    end
 end
+
+printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
+
+fmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
+fmt(spec::String, x) = fmt(FormatSpec(1, spec), x)
+
 
  
