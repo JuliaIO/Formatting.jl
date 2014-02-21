@@ -5,8 +5,7 @@ using Base.Test
 
 
 # default spec
-fs = FormatSpec(2, "")
-@test fs.iarg == 2
+fs = FormatSpec("")
 @test fs.typ == 's'
 @test fs.fill == ' '
 @test fs.align == '<'
@@ -19,21 +18,21 @@ fs = FormatSpec(2, "")
 
 # more cases
 
-fs = FormatSpec(1, "d")
-@test fs == FormatSpec(1, 'd')
+fs = FormatSpec("d")
+@test fs == FormatSpec('d')
 @test fs.align == '>'
 
-@test FormatSpec(1, "8x") == FormatSpec(1, 'x'; width=8)
-@test FormatSpec(1, "08b") == FormatSpec(1, 'b'; width=8, zpad=true)
-@test FormatSpec(1, "12f") == FormatSpec(1, 'f'; width=12, prec=6)
-@test FormatSpec(1, "12.7f") == FormatSpec(1, 'f'; width=12, prec=7)
-@test FormatSpec(1, "+08o") == FormatSpec(1, 'o'; width=8, zpad=true, sign='+')
+@test FormatSpec("8x") == FormatSpec('x'; width=8)
+@test FormatSpec("08b") == FormatSpec('b'; width=8, zpad=true)
+@test FormatSpec("12f") == FormatSpec('f'; width=12, prec=6)
+@test FormatSpec("12.7f") == FormatSpec('f'; width=12, prec=7)
+@test FormatSpec("+08o") == FormatSpec('o'; width=8, zpad=true, sign='+')
 
-@test FormatSpec(1, "8") == FormatSpec(1, 's'; width=8)
-@test FormatSpec(1, ".6f") == FormatSpec(1, 'f'; prec=6)
-@test FormatSpec(1, "<8d") == FormatSpec(1, 'd'; width=8, align='<')
-@test FormatSpec(1, "#<8d") == FormatSpec(1, 'd'; width=8, fill='#', align='<')
-@test FormatSpec(1, "#8,d") == FormatSpec(1, 'd'; width=8, ipre=true, tsep=true)
+@test FormatSpec("8") == FormatSpec('s'; width=8)
+@test FormatSpec(".6f") == FormatSpec('f'; prec=6)
+@test FormatSpec("<8d") == FormatSpec('d'; width=8, align='<')
+@test FormatSpec("#<8d") == FormatSpec('d'; width=8, fill='#', align='<')
+@test FormatSpec("#8,d") == FormatSpec('d'; width=8, ipre=true, tsep=true)
 
 # format string
 

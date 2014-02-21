@@ -27,7 +27,6 @@ _tycls(c::Char) =
     error("Invalid type char $(c)")
 
 immutable FormatSpec
-    iarg::Int    # argument index
     cls::Char    # category: 'i' | 'f' | 'c' | 's'
     typ::Char
     fill::Char    
@@ -39,7 +38,7 @@ immutable FormatSpec
     zpad::Bool   # whether to do zero-padding
     tsep::Bool   # whether to use thousand-separator
 
-    function FormatSpec(iarg::Int, typ::Char;
+    function FormatSpec(typ::Char;
                fill::Char=' ', 
                align::Char='\0',
                sign::Char='-',
@@ -56,7 +55,7 @@ immutable FormatSpec
         if cls == 'f' && prec < 0
             prec = 6
         end
-        new(iarg, cls, typ, fill, align, sign, width, prec, ipre, zpad, tsep)
+        new(cls, typ, fill, align, sign, width, prec, ipre, zpad, tsep)
     end
 end
 
@@ -79,7 +78,7 @@ end
 
 const _spec_regex = r"^(.?[<>])?([ +-])?(#)?(\d+)?(,)?(.\d+)?([bcdeEfFgGnosxX])?$"
 
-function FormatSpec(iarg::Int, s::String)
+function FormatSpec(s::String)
     # default spec
     _fill = ' '
     _align = '\0'
@@ -146,7 +145,7 @@ function FormatSpec(iarg::Int, s::String)
         end
     end
 
-    return FormatSpec(iarg, _typ;
+    return FormatSpec(_typ;
                       fill=_fill, 
                       align=_align,
                       sign=_sign,
@@ -199,7 +198,7 @@ end
 printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
 
 fmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
-fmt(spec::String, x) = fmt(FormatSpec(1, spec), x)
+fmt(spec::String, x) = fmt(FormatSpec(spec), x)
 
 
  
