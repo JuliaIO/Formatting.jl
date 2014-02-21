@@ -95,5 +95,5 @@ printfmtln(io::IO, fe::Union(String,FormatExpr), args...) = (printfmt(io, fe, ar
 printfmtln(fe::Union(String,FormatExpr), args...) = printfmtln(STDOUT, fe, args...)
 
 format(fe::Union(String,FormatExpr), args...) = 
-    (buf = IOBuffer(); printfmt(buf, fe, args); utf8(bytestring(buf)))
+    (buf = IOBuffer(); printfmt(buf, fe, args...); bytestring(buf))
 
