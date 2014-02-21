@@ -22,14 +22,18 @@ using Formatting
 
 ## Types and Functions
 
+#### Types to Represent Formats
+
 This package has two types ``FormatSpec`` and ``FormatExpr`` to represent a format specification.
 
 In particular, ``FormatSpec`` is used to capture the specification of a single entry. One can compile a format specification string into a ``FormatSpec`` instance as
 
 ```julia
-fmt = FormatSpec("d")
-fmt = FormatSpec("<8.4f")
+fspec = FormatSpec("d")
+fspec = FormatSpec("<8.4f")
 ```
+Please refer to [Python's format specification language](http://docs.python.org/2/library/string.html#formatspec) for details.
+
 
 ``FormatExpr`` captures a formatting expression that may involve multiple items. One can compile a formatting string into a ``FormatExpr`` instance as
 
@@ -37,6 +41,50 @@ fmt = FormatSpec("<8.4f")
 fe = FormatExpr("{1} + {2}")
 fe = FormatExpr("{1:d} + {2:08.4e} + {3|>abs2}")
 ```
+Please refer to [Python's format string syntax](http://docs.python.org/2/library/string.html#format-string-syntax) for details.
 
 
+**Note:** If the same format is going to be applied for multiple times. It is more efficient to first compile it.
+
+
+#### Formatted Printing
+
+One can use ``printfmt`` and ``printfmtln`` for formatted printing:
+
+- **printfmt**(io, fe, args...)
+
+- **printfmt**(fe, args...)
+
+    Print given arguments using given format ``fe``. Here ``fe`` can be a formatting string, an instance of ``FormatSpec`` or ``FormatExpr``.
+    
+    **Examples**
+    
+    ```julia
+    printfmt("{1:>4s} + {2:.2f}", "abc", 12) # --> print(" abc + 12.00")
+    printfmt("{} = {:#04x}", "abc", 12) # --> print("abc = 0x0c") 
+    
+    fs = FormatSpec("#04x")
+    printfmt(fs, 12)   # --> print("0x0c")
+    
+    fe = FormatExpr("{} = {:#04x}")
+    printfmt(fe, "abc", 12)   # --> print("abc = 0x0c")
+    ```
+    
+- **printfmtln**(io, fe, args...)
+
+- **printfmtln**(fe, args...)
+
+    Similar to ``printfmt`` except that this function print a newline at the end.
+
+#### Formatted String
+
+One can use ``fmt`` to format a single value into a string, or ``format`` to format one to multiple arguments into a string using an format expression.
+
+- **fmt**(fspec, a)
+
+    Format a single value using a format specification given by ``fspec``, where ``fspec`` can be either a string or an instance of ``FormatSpec``.
+    
+- **format**(fe, args...)
+
+    Format arguments using a format expression given by ``fe``, where ``fe`` can be either a string or an instance of ``FormatSpec``.
 
