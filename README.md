@@ -72,6 +72,20 @@ One can use ``printfmt`` and ``printfmtln`` for formatted printing:
     fe = FormatExpr("{} = {:#04x}")
     printfmt(fe, "abc", 12)   # --> print("abc = 0x0c")
     ```
+
+    **Notes**
+
+    If the first argument is a string, it will be first compiled into a ``FormatExpr``, which implies that you can not use specification-only string in the first argument.
+
+    ```julia
+    printfmt("{1:d}", 10)   # OK, "{1:d}" can be compiled into a FormatExpr instance
+    printfmt("d", 10)       # Error, "d" can not be compiled into a FormatExpr instance
+                            # such a string to specify a format specification for single argument
+
+    printfmt(FormatSpec("d"), 10)  # OK
+    printfmt(FormatExpr("{1:d}", 10)) # OK
+    ```
+
     
 - **printfmtln**(io, fe, args...)
 
