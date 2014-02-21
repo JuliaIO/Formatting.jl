@@ -198,13 +198,56 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::FloatingPoint)
     end
 end
 
+function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Int, ec::Char)
+    intv = itrunc(u)
+    decv = u - intv
+    _pfmt_float(out, sch, zs, intv, decv, prec)
+    write(out, ec)
+    if e >= 0
+        write(out, '+')
+    else
+        write(out, '-')
+        e = -e
+    end
+    (e1, e2) = divrem(e, 10)
+    write(out, char('0' + e1))
+    write(out, char('0' + e2))
+end
 
 
+function _pfmt_e(out::IO, fs::FormatSpec, x::FloatingPoint)
+    # extract sign, significand, and exponent
+    ax = abs(x)
+    sch = _signchar(x, fs.sign)
+    if ax == 0.0
+        e = 0
+        u = zero(x)
+    else
+        e = ifloor(log10(ax))  # exponent
+        u = ax / exp10(e)  # significand
+    end
 
+    # calculate length
+    xlen = 6 + fs.prec
+    if sch != '\0'
+        xlen += 1
+    end 
 
-
-
-
-
-
+    # print
+    wid = fs.width
+    if wid <= xlen
+        _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+    elseif fs.zpad
+        _pfmt_floate(out, sch, wid-xlen, u, fs.prec, e, fs.typ)
+    else
+        a = fs.align
+        if a == '<'
+            _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+            _repwrite(out, fs.fill, wid-xlen)
+        else
+            _repwrite(out, fs.fill, wid-xlen)
+            _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+        end
+    end
+end
 
