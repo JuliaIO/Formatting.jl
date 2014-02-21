@@ -61,7 +61,6 @@ end
 
 function show(io::IO, fs::FormatSpec)
     println(io, "$(typeof(fs))")
-    println(io, "  iarg  = $(fs.iarg)")
     println(io, "  cls   = $(fs.cls)")
     println(io, "  typ   = $(fs.typ)")
     println(io, "  fill  = $(fs.fill)")
