@@ -10,21 +10,36 @@ immutable FormatEntry
     FormatEntry(ia::Int, spec::String) = new(ia, FormatSpec(spec))
 end
 
-function FormatEntry(s::String)
+
+# pos > 0: must not have iarg in expression (use pos+1), return (entry, pos + 1)
+# pos < 0: must have iarg in expression, return (entry, -1)
+# pos = 0: init, can be either, return (entry, 1) or (entry, -1)
+function make_formatentry(s::String, pos::Int)
     @assert s[1] == '{' && s[end] == '}'
     sc = s[2:end-1]
     icolon = search(sc, ':')
-    if icolon == 0
-        iarg = int(sc)
+    if icolon == 0  # no colon
+        iarg = isempty(sc) ? -1 : int(sc)
         spec = FormatSpec('s')
     else
-        if icolon < 2
-            error("Argument index is needed.")
-        end
-        iarg = int(sc[1:icolon-1])
+        iarg = icolon >=2 ? int(sc[1:icolon-1]) : -1
+        iarg != 0 || error("Argument index cannot be zero.")
         spec = FormatSpec(sc[icolon+1:end])
     end
-    return FormatEntry(iarg, spec)
+
+    if pos > 0
+        iarg < 0 || error("entry with and without argument index must not coexist.")
+        iarg = (pos += 1)
+    elseif pos < 0
+        iarg > 0 || error("entry with and without argument index must not coexist.")
+    else # pos == 0
+        if iarg < 0
+            iarg = pos = 1
+        else
+            pos = -1
+        end
+    end
+    return (FormatEntry(iarg, spec), pos)
 end
 
 
@@ -77,12 +92,14 @@ function FormatExpr(s::String)
     (p, prefix) = find_next_entry_open(s, 1)
     if p > 0
         q = find_next_entry_close(s, p+1)
-        push!(entries, FormatEntry(s[p:q]))
+        (e, pos) = make_formatentry(s[p:q], 0)
+        push!(entries, e)
         (p, pre) = find_next_entry_open(s, q+1)
         while p > 0
             push!(inter, pre)
             q = find_next_entry_close(s, p+1)
-            push!(entries, FormatEntry(s[p:q]))
+            (e, pos) = make_formatentry(s[p:q], pos)
+            push!(entries, e)
             (p, pre) = find_next_entry_open(s, q+1)
         end
         suffix = pre

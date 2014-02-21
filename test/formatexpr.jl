@@ -17,6 +17,16 @@ using Base.Test
 @test format("{1:04d} + {2:*>5}", 10, "xyz") == "0010 + **xyz"
 @test format("let {2:<5} := {1:.4f};", 12.3, "var") == "let var   := 12.3000;"
 
+@test format("{}", 10) == "10"
+@test format("{} + {}", 10, 20) == "10 + 20"
+@test format("{} + {:04d}", 10, 20) == "10 + 0020"
+@test format("{:03d} + {}", 10, 20) == "010 + 20"
+@test format("{:03d} + {:04d}", 10, 20) == "010 + 0020"
+@test_throws format("{1} + {}", 10, 20)
+@test_throws format("{} + {1}", 10, 20)
+
+# escape {{ and }}
+
 @test format("{{}}") == "{}"
 @test format("{{{1}}}", 10) == "{10}"
 @test format("v: {{{2}}} = {1:.4f}", 1.2, "ab") == "v: {ab} = 1.2000"
