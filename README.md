@@ -20,6 +20,9 @@ To start using the package, you can simply write
 using Formatting
 ```
 
+This package depends on Julia of version 0.2 or above. It has no other dependencies. The package is MIT-licensed.
+
+
 ## Types and Functions
 
 #### Types to Represent Formats
