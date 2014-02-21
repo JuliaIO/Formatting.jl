@@ -15,3 +15,4 @@ before_install:
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("Formatting"))`); Pkg.pin("Formatting"); Pkg.resolve()'
   - julia -e 'using Formatting; @assert isdefined(:Formatting); @assert typeof(Formatting) === Module'
+  - julia runtest.jl
