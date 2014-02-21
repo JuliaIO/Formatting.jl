@@ -37,6 +37,33 @@ type FormatExpr
     inter::Vector{UTF8String}
 end
 
+_raise_unmatched_lbrace() = error("Unmatched { in format expression.")
+
+function find_next_entry_open(s::String, si::Int)
+    slen = length(s)
+    p = search(s, '{', si)
+    p < slen || _raise_unmatched_lbrace()
+    while p > 0 && s[p+1] == '{'  # escape `{{`
+        p = search(s, '{', p+2)
+        p < slen || _raise_unmatched_lbrace()
+    end
+    # println("open at $p")
+    pre = p > 0 ? s[si:p-1] : s[si:end]
+    if !isempty(pre)
+        pre = replace(pre, "{{", '{')
+        pre = replace(pre, "}}", '}')
+    end
+    return (p, utf8(pre))
+end
+
+function find_next_entry_close(s::String, si::Int)
+    slen = length(s)
+    p = search(s, '}', si)
+    p > 0 || _raise_unmatched_lbrace()
+    # println("close at $p")
+    return p
+end
+
 function FormatExpr(s::String)
     slen = length(s)
     
@@ -47,23 +74,18 @@ function FormatExpr(s::String)
     inter = UTF8String[]
 
     # scan
-    p = search(s, '{')
+    (p, prefix) = find_next_entry_open(s, 1)
     if p > 0
-        prefix = utf8(s[1:p-1])
-        q = search(s, '}', p+1)
-        q > p || error("Unmatched { in format expression.")
+        q = find_next_entry_close(s, p+1)
         push!(entries, FormatEntry(s[p:q]))
-        p = search(s, '{', q+1)
+        (p, pre) = find_next_entry_open(s, q+1)
         while p > 0
-            push!(inter, utf8(s[q+1:p-1]))
-            q = search(s, '}', p+1)
-            q > p || error("Unmatched { in format expression.")
+            push!(inter, pre)
+            q = find_next_entry_close(s, p+1)
             push!(entries, FormatEntry(s[p:q]))
-            p = search(s, '{', q+1)
+            (p, pre) = find_next_entry_open(s, q+1)
         end
-        suffix = utf8(s[q+1:end])
-    else
-        prefix = s
+        suffix = pre
     end
     FormatExpr(prefix, suffix, entries, inter)
 end

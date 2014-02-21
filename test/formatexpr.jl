@@ -1,7 +1,6 @@
 using Formatting
 using Base.Test
 
-
 # with positional arguments
 
 @test format("{1}", 10) == "10"
@@ -17,4 +16,8 @@ using Base.Test
 @test format("{1:d} + {2:s}", 10, "xyz") == "10 + xyz"
 @test format("{1:04d} + {2:*>5}", 10, "xyz") == "0010 + **xyz"
 @test format("let {2:<5} := {1:.4f};", 12.3, "var") == "let var   := 12.3000;"
+
+@test format("{{}}") == "{}"
+@test format("{{{1}}}", 10) == "{10}"
+@test format("v: {{{2}}} = {1:.4f}", 1.2, "ab") == "v: {ab} = 1.2000"
 
