@@ -1,32 +1,23 @@
 # formatting expression
 
-### Format entry
+### Argument specification
 
-immutable FormatEntry
-    iarg::Int
-    spec::FormatSpec
+immutable ArgSpec
+    argidx::Int
 
-    FormatEntry(ia::Int, spec::FormatSpec) = new(ia, spec)
-    FormatEntry(ia::Int, spec::String) = new(ia, FormatSpec(spec))
+    function ArgSpec(idx::Int)
+        idx != 0 || error("Argument index cannot be zero.")
+        new(idx)
+    end
 end
 
+getarg(args, sp::ArgSpec) = args[sp.argidx]
 
 # pos > 0: must not have iarg in expression (use pos+1), return (entry, pos + 1)
 # pos < 0: must have iarg in expression, return (entry, -1)
 # pos = 0: init, can be either, return (entry, 1) or (entry, -1)
-function make_formatentry(s::String, pos::Int)
-    @assert s[1] == '{' && s[end] == '}'
-    sc = s[2:end-1]
-    icolon = search(sc, ':')
-    if icolon == 0  # no colon
-        iarg = isempty(sc) ? -1 : int(sc)
-        spec = FormatSpec('s')
-    else
-        iarg = icolon >=2 ? int(sc[1:icolon-1]) : -1
-        iarg != 0 || error("Argument index cannot be zero.")
-        spec = FormatSpec(sc[icolon+1:end])
-    end
-
+function make_argspec(s::String, pos::Int)
+    iarg::Int = isempty(s) ? -1 : int(s)
     if pos > 0
         iarg < 0 || error("entry with and without argument index must not coexist.")
         iarg = (pos += 1)
@@ -39,7 +30,29 @@ function make_formatentry(s::String, pos::Int)
             pos = -1
         end
     end
-    return (FormatEntry(iarg, spec), pos)
+    return (ArgSpec(iarg), pos)
+end
+
+
+### Format entry
+
+immutable FormatEntry
+    argspec::ArgSpec
+    spec::FormatSpec
+end
+
+function make_formatentry(s::String, pos::Int)
+    @assert s[1] == '{' && s[end] == '}'
+    sc = s[2:end-1]
+    icolon = search(sc, ':')
+    if icolon == 0  # no colon
+        (argspec, pos) = make_argspec(sc, pos)
+        spec = FormatSpec('s')
+    else
+        (argspec, pos) = make_argspec(sc[1:icolon-1], pos)
+        spec = FormatSpec(sc[icolon+1:end])
+    end
+    return (FormatEntry(argspec, spec), pos)
 end
 
 
@@ -115,11 +128,11 @@ function printfmt(io::IO, fe::FormatExpr, args...)
     ne = length(ents)
     if ne > 0
         e = ents[1]
-        printfmt(io, e.spec, args[e.iarg])
+        printfmt(io, e.spec, getarg(args, e.argspec))
         for i = 2:ne
             write(io, fe.inter[i-1])
             e = ents[i]
-            printfmt(io, e.spec, args[e.iarg])
+            printfmt(io, e.spec, getarg(args, e.argspec))
         end
     end
     if !isempty(fe.suffix)
