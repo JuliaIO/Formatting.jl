@@ -142,9 +142,25 @@ fs = FormatSpec(1, "d")
 @test fmt("012.2e", -13.89) == "-0001.39e+01"
 @test fmt("+012.2e", 13.89) == "+0001.39e+01"
 
-# format 
+# format special floating point value
 
+@test fmt("f", NaN) == "NaN"
+@test fmt("e", NaN) == "NaN"
+@test fmt("f", NaN32) == "NaN"
+@test fmt("e", NaN32) == "NaN"
 
+@test fmt("f", Inf) == "Inf"
+@test fmt("e", Inf) == "Inf"
+@test fmt("f", Inf32) == "Inf"
+@test fmt("e", Inf32) == "Inf"
 
+@test fmt("f", -Inf) == "-Inf"
+@test fmt("e", -Inf) == "-Inf"
+@test fmt("f", -Inf32) == "-Inf"
+@test fmt("e", -Inf32) == "-Inf"
 
+@test fmt("<5f", Inf) == "Inf  "
+@test fmt(">5f", Inf) == "  Inf"
+@test fmt("*<5f", Inf) == "Inf**"
+@test fmt("*>5f", Inf) == "**Inf"
 

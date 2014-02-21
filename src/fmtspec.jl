@@ -182,9 +182,13 @@ function printfmt(io::IO, fs::FormatSpec, x)
         _pfmt_i(io, fs, ix, _Bin())  
     elseif cls == 'f'
         fx = float(x)
-        ty == 'f' || ty == 'F' ? _pfmt_f(io, fs, fx) :
-        ty == 'e' || ty == 'E' ? _pfmt_e(io, fs, fx) :
-        _pfmt_g(io, fs, fx)
+        if isfinite(fx)
+            ty == 'f' || ty == 'F' ? _pfmt_f(io, fs, fx) :
+            ty == 'e' || ty == 'E' ? _pfmt_e(io, fs, fx) :
+            error("format for type g or G is not supported yet (use f or e instead).")
+        else
+            _pfmt_specialf(io, fs, fx)
+        end
     elseif cls == 's'
         _pfmt_s(io, fs, _srepr(x))
     else # cls == 'c'

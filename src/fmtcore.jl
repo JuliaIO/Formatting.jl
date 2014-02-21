@@ -234,20 +234,47 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::FloatingPoint)
     end 
 
     # print
+    ec = isupper(fs.typ) ? 'E' : 'e'
     wid = fs.width
     if wid <= xlen
-        _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+        _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)
     elseif fs.zpad
-        _pfmt_floate(out, sch, wid-xlen, u, fs.prec, e, fs.typ)
+        _pfmt_floate(out, sch, wid-xlen, u, fs.prec, e, ec)
     else
         a = fs.align
         if a == '<'
-            _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+            _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)
             _repwrite(out, fs.fill, wid-xlen)
         else
             _repwrite(out, fs.fill, wid-xlen)
-            _pfmt_floate(out, sch, 0, u, fs.prec, e, fs.typ)
+            _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)
         end
     end
 end
+
+
+function _pfmt_g(out::IO, fs::FormatSpec, x::FloatingPoint)
+    # number decomposition
+    ax = abs(x)
+    if 1.0e-4 <= ax < 1.0e6
+        _pfmt_f(out, fs, x)
+    else
+        _pfmt_e(out, fs, x)
+    end
+end
+
+function _pfmt_specialf(out::IO, fs::FormatSpec, x::FloatingPoint)
+    if isinf(x) 
+        if x > 0
+            _pfmt_s(out, fs, "Inf")
+        else
+            _pfmt_s(out, fs, "-Inf")
+        end
+    else
+        @assert isnan(x)
+        _pfmt_s(out, fs, "NaN")
+    end
+end
+
+
 
