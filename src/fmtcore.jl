@@ -63,42 +63,9 @@ _digitchar(x::Integer, ::_Oct) = char('0' + x)
 _digitchar(x::Integer, ::_Hex) = char(x < 10 ? '0' + x : 'a' + (x - 10))
 _digitchar(x::Integer, ::_HEX) = char(x < 10 ? '0' + x : 'A' + (x - 10))
 
-
-function _pfmt_i{Op}(out::IO, fs::FormatSpec, x::Integer, op::Op)
-    # calculate actual length
-    ax = abs(x)
-    xlen = _ndigits(abs(x), op)
-    # sign char
-    sch = x < 0 ? '-' :
-          fs.sign == '+' ? '+' :
-          fs.sign == ' ' ? ' ' : '\0'
-    if sch != '\0'
-        xlen += 1
-    end
-    # prefix (e.g. 0x, 0b, 0o)
-    ip = ""
-    if fs.ipre
-        ip = _ipre(op)
-        xlen += length(ip)
-    end
-
-    # printing
-    wid = fs.width
-    if wid <= xlen
-        _pfmt_int(out, sch, ip, 0, ax, op)
-    elseif fs.zpad
-        _pfmt_int(out, sch, ip, wid-xlen, ax, op)
-    else
-        a = fs.align
-        if a == '<'
-            _pfmt_int(out, sch, ip, 0, ax, op)
-            _repwrite(out, fs.fill, wid-xlen)
-        else
-            _repwrite(out, fs.fill, wid-xlen)
-            _pfmt_int(out, sch, ip, 0, ax, op)
-        end
-    end
-end
+_signchar(x::Number, s::Char) = x < 0 ? '-' :
+                                s == '+' ? '+' :
+                                s == ' ' ? ' ' : '\0'
 
 function _pfmt_int{Op}(out::IO, sch::Char, ip::ASCIIString, zs::Integer, ax::Integer, op::Op)
     # print sign
@@ -134,5 +101,110 @@ function _pfmt_intdigits{Op,T<:Integer}(out::IO, ax::T, op::Op)
         b = _div(b, op)
     end
 end
+
+function _pfmt_i{Op}(out::IO, fs::FormatSpec, x::Integer, op::Op)
+    # calculate actual length
+    ax = abs(x)
+    xlen = _ndigits(abs(x), op)
+    # sign char
+    sch = _signchar(x, fs.sign)
+    if sch != '\0'
+        xlen += 1
+    end
+    # prefix (e.g. 0x, 0b, 0o)
+    ip = ""
+    if fs.ipre
+        ip = _ipre(op)
+        xlen += length(ip)
+    end
+
+    # printing
+    wid = fs.width
+    if wid <= xlen
+        _pfmt_int(out, sch, ip, 0, ax, op)
+    elseif fs.zpad
+        _pfmt_int(out, sch, ip, wid-xlen, ax, op)
+    else
+        a = fs.align
+        if a == '<'
+            _pfmt_int(out, sch, ip, 0, ax, op)
+            _repwrite(out, fs.fill, wid-xlen)
+        else
+            _repwrite(out, fs.fill, wid-xlen)
+            _pfmt_int(out, sch, ip, 0, ax, op)
+        end
+    end
+end
+
+
+### print floating point numbers
+
+function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, prec::Int)
+    # print sign
+    if sch != '\0'
+        write(out, sch)
+    end
+    # print padding zeros
+    if zs > 0
+        _repwrite(out, '0', zs)
+    end
+    # print integer part
+    if intv == 0
+        write(out, '0')
+    else
+        _pfmt_intdigits(out, intv, _Dec())
+    end
+    # print decimal point
+    write(out, '.')
+    # print decimal part
+    if prec > 0
+        idecv = iround(decv * exp10(prec))
+        nd = _ndigits(idecv, _Dec())
+        if nd < prec
+            _repwrite(out, '0', prec - nd)
+        end
+        _pfmt_intdigits(out, idecv, _Dec())
+    end
+end
+
+function _pfmt_f(out::IO, fs::FormatSpec, x::FloatingPoint)
+    # separate sign, integer, and decimal part
+    ax = abs(x)
+    sch = _signchar(x, fs.sign)
+    intv = itrunc(ax)
+    decv = ax - intv
+
+    # calculate length
+    xlen = _ndigits(intv, _Dec()) + 1 + fs.prec
+    if sch != '\0'
+        xlen += 1
+    end 
+
+    # print
+    wid = fs.width
+    if wid <= xlen
+        _pfmt_float(out, sch, 0, intv, decv, fs.prec)
+    elseif fs.zpad
+        _pfmt_float(out, sch, wid-xlen, intv, decv, fs.prec)
+    else
+        a = fs.align
+        if a == '<'
+            _pfmt_float(out, sch, 0, intv, decv, fs.prec)
+            _repwrite(out, fs.fill, wid-xlen)
+        else
+            _repwrite(out, fs.fill, wid-xlen)
+            _pfmt_float(out, sch, 0, intv, decv, fs.prec)
+        end
+    end
+end
+
+
+
+
+
+
+
+
+
 
 
