@@ -31,3 +31,6 @@ using Base.Test
 @test format("{{{1}}}", 10) == "{10}"
 @test format("v: {{{2}}} = {1:.4f}", 1.2, "ab") == "v: {ab} = 1.2000"
 
+# with filter
+@test format("{1|>abs2} + {2|>abs2:.2f}", 2, 3) == "4 + 9.00"
+

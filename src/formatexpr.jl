@@ -7,21 +7,35 @@ immutable ArgSpec
     hasfilter::Bool
     filter::Function
 
-    function ArgSpec(idx::Int)
+    function ArgSpec(idx::Int, hasfil::Bool, filter::Function)
         idx != 0 || error("Argument index cannot be zero.")
-        new(idx, false, Base.identity)
+        new(idx, hasfil, filter)
     end
 end
 
 getarg(args, sp::ArgSpec) = 
-    (a = args[sp.argidx]; sp.hasfilter ? a : sp.filter(a))
+    (a = args[sp.argidx]; sp.hasfilter ? sp.filter(a) : a)
 
 # pos > 0: must not have iarg in expression (use pos+1), return (entry, pos + 1)
 # pos < 0: must have iarg in expression, return (entry, -1)
 # pos = 0: no positional argument before, can be either, return (entry, 1) or (entry, -1)
 function make_argspec(s::String, pos::Int)
     # for argument position
-    iarg::Int = isempty(s) ? -1 : int(s)
+    iarg::Int = -1
+    hasfil::Bool = false
+    ff::Function = Base.identity
+
+    if !isempty(s)
+        ifil = searchindex(s, "|>")
+        if ifil == 0
+            iarg = int(s)
+        else
+            iarg = ifil > 1 ? int(s[1:ifil-1]) : -1
+            hasfil = true
+            ff = eval(symbol(s[ifil+2:end]))
+        end       
+    end
+
     if pos > 0
         iarg < 0 || error("entry with and without argument index must not coexist.")
         iarg = (pos += 1)
@@ -33,10 +47,9 @@ function make_argspec(s::String, pos::Int)
         else
             pos = -1
         end
-    end
+    end 
 
-    # for filtering
-    return (ArgSpec(iarg), pos)
+    return (ArgSpec(iarg, hasfil, ff), pos)
 end
 
 
