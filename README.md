@@ -88,3 +88,16 @@ One can use ``fmt`` to format a single value into a string, or ``format`` to for
 
     Format arguments using a format expression given by ``fe``, where ``fe`` can be either a string or an instance of ``FormatSpec``.
 
+
+## Difference from Python's Format
+
+At this point, this package implements a subset of Python's formatting language (with slight modification). Here is a summary of the differences:
+
+- ``g`` and ``G`` for floating point formatting have not been supported yet. Please use ``f``, ``e``, or ``E`` instead.
+
+- The package currently provides default alignment, left alignment ``<`` and right alignment ``>``. Other form of alignment such as centered alignment ``^`` has not been supported yet.
+
+- In terms of argument specification, it supports natural ordering (e.g. ``{} + {}``), explicit position (e.g. ``{1} + {2}``). It hasn't supported named arguments or fields extraction yet. Note that mixing these two modes is not allowed (e.g. ``{1} + {}``).
+
+- The package provides support for filtering (for explicitly positioned arguments), such as ``{1|>lowercase}`` by allowing one to embed the ``|>`` operator, which the Python counter part does not support.
+
