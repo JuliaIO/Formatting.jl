@@ -2,11 +2,13 @@ module Formatting
 
     import Base.show
 
-    export 
-        FormatSpec, FormatExpr, 
-        printfmt, printfmtln, fmt, format
+    export
+        FormatSpec, FormatExpr,
+        printfmt, printfmtln, fmt, format,
+        sprintf1, generate_formatter
 
 
+    include("cformat.jl" )
     include("fmtspec.jl")
     include("fmtcore.jl")
     include("formatexpr.jl")

@@ -22,8 +22,8 @@ using Base.Test
 @test format("{} + {:04d}", 10, 20) == "10 + 0020"
 @test format("{:03d} + {}", 10, 20) == "010 + 20"
 @test format("{:03d} + {:04d}", 10, 20) == "010 + 0020"
-@test_throws format("{1} + {}", 10, 20)
-@test_throws format("{} + {1}", 10, 20)
+@test_throws(ErrorException, format("{1} + {}", 10, 20) )
+@test_throws(ErrorException, format("{} + {1}", 10, 20) )
 
 # escape {{ and }}
 
