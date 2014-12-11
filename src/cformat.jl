@@ -143,7 +143,7 @@ function format{T<:Real}( x::T;
         leftjustified::Bool=false,
         zeropadding::Bool=false, # when right-justified, use 0 instead of space to fill
         commas::Bool=false,
-        signed::Bool=false,
+        signed::Bool=false, # +/- prefix
         positivespace::Bool=false,
         stripzeros::Bool=(precision==nothing),
         parens::Bool=false, # use (1.00) instead of -1.00. Used in finance
@@ -153,7 +153,10 @@ function format{T<:Real}( x::T;
         fractionsep="/", # num / den
         fractionwidth::Int = 0,
         tryden = 0, # if 2 or higher, try to use this denominator, without losing precision
-        conversion::ASCIIString="")
+        suffix="", # useful for units/%
+        autoscale=:none, # :metric, :binary or :finance
+        conversion::ASCIIString=""
+        )
     checkwidth = commas
     if conversion == ""
         if T <: FloatingPoint || T <: Rational && precision != nothing
@@ -174,6 +177,68 @@ function format{T<:Real}( x::T;
     end
     if T <: Rational && conversion == "s"
         stripzeros = false
+    end
+    if ( T <: FloatingPoint && actualconv == "f" || T <: Integer ) && autoscale != :none
+        actualconv = "f"
+        if autoscale == :metric
+            scales = [
+                (1e24, "Y" ),
+                (1e21, "Z" ),
+                (1e18, "E" ),
+                (1e15, "P" ),
+                (1e12, "T" ),
+                (1e9,  "G"),
+                (1e6,  "M"),
+                (1e3,  "k") ]
+            if abs(x) > 1
+                for (mag, sym) in scales
+                    if abs(x) >= mag
+                        x /= mag
+                        suffix = sym * suffix
+                        break
+                    end
+                end
+            elseif T <: FloatingPoint
+                smallscales = [
+                    ( 1e-12, "p" ),
+                    ( 1e-9,  "n" ),
+                    ( 1e-6,  "μ" ),
+                    ( 1e-3,  "m" ) ]
+                for (mag,sym) in smallscales
+                    if abs(x) < mag*10
+                        x /= mag
+                        suffix = sym * suffix
+                        break
+                    end
+                end
+            end
+        else
+            if autoscale == :binary
+                scales = [
+                    (1024.0 ^8,  "Yi" ),
+                    (1024.0 ^7,  "Zi" ),
+                    (1024.0 ^6,  "Ei" ),
+                    (1024^5,  "Pi" ),
+                    (1024^4,  "Ti" ),
+                    (1024^3,  "Gi"),
+                    (1024^2,  "Mi"),
+                    (1024,    "Ki")
+                ]
+            else # :finance
+                scales = [
+                    (1e12, "t" ),
+                    (1e9,  "b"),
+                    (1e6,  "m"),
+                    (1e3,  "k") ]
+            end
+            for (mag, sym) in scales
+                if abs(x) >= mag
+                    x /= mag
+                    suffix = sym * suffix
+                    break
+                end
+            end
+        end
     end
 
     nonneg = x >= 0
@@ -263,6 +328,8 @@ function format{T<:Real}( x::T;
             checkwidth = true
         end
     end
+
+    s *= suffix
 
     if parens && !in( actualconv[1], "xX" )
         # if zero or positive, we still need 1 white space on the right

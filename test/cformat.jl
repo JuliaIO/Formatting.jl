@@ -156,6 +156,26 @@ function test_format()
     # same with unspecified width
     @test format(  12345678, commas=true, parens=true )== " 12,345,678 "
     @test format( -12345678, commas=true, parens=true )== "(12,345,678)"
+
+    @test format( 1.2e9, autoscale = :metric ) == "1.2G"
+    @test format( 1.2e6, autoscale = :metric ) == "1.2M"
+    @test format( 1.2e3, autoscale = :metric ) == "1.2k"
+    @test format( 1.2e-6, autoscale = :metric ) == "1.2μ"
+    @test format( 1.2e-9, autoscale = :metric ) == "1.2n"
+    @test format( 1.2e-12, autoscale = :metric ) == "1.2p"
+
+    @test format( 1.2e9, autoscale = :finance ) == "1.2b"
+    @test format( 1.2e6, autoscale = :finance ) == "1.2m"
+    @test format( 1.2e3, autoscale = :finance ) == "1.2k"
+
+    @test format( 0x40000000, autoscale = :binary ) == "1Gi"
+    @test format( 0x100000, autoscale = :binary ) == "1Mi"
+    @test format( 0x800, autoscale = :binary ) == "2Ki"
+    @test format( 0x400, autoscale = :binary ) == "1Ki"
+
+    @test format( 100.00, precision=2, suffix="%" ) == "100.00%"
+    @test format( 100, precision=2, suffix="%" ) == "100%"
+    @test format( 100, precision=2, suffix="%", conversion="f" ) == "100.00%"
 end
 
 test_commas()
