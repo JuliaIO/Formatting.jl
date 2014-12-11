@@ -198,5 +198,10 @@ The keyword arguments are (Bold keywards are not printf standard)
 * **fractionsep**. Default `/`
 * **fractionwidth**. Integer. Try to pad zeros to the numerator until the fractional part has this width
 * **tryden**. Integer. Try to use this denominator instead of a smaller one. No-op if it'd lose precision.
+* **suffix**. String. This strings will be appended to the output. Useful for units/%
+* **autoscale**. Symbol, default `:none`. It could be `:metric`, `:binary`, or `:finance`.
+    * `:metric` implements common SI symbols for large and small numbers e.g. `M`, `k`, `μ`, `n`
+    * `:binary` implements common ISQ symbols for large numbers e.g. `Ti`, `Gi`, `Mi`, `Ki`
+    * `:finance` implements common finance/news symbols for large numbers e.g. `b` (billion), `m` (millions)
 
 See the test script for more examples.
