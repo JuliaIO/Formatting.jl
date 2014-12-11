@@ -98,7 +98,7 @@ end
 
 function generate_format_string(;
         width=nothing,
-        precision=nothing,
+        precision= -1,
         leftjustified=false,
         zeropadding=false,
         commas=false,
@@ -131,7 +131,7 @@ function generate_format_string(;
             s *= string( width )
         end
     end
-    if precision != nothing
+    if precision != -1
         s *= "." * string( precision )
     end
     s * conversion
@@ -139,13 +139,13 @@ end
 
 function format{T<:Real}( x::T;
         width=nothing,
-        precision=nothing,
+        precision= -1,
         leftjustified::Bool=false,
         zeropadding::Bool=false, # when right-justified, use 0 instead of space to fill
         commas::Bool=false,
         signed::Bool=false, # +/- prefix
         positivespace::Bool=false,
-        stripzeros::Bool=(precision==nothing),
+        stripzeros::Bool=(precision== -1),
         parens::Bool=false, # use (1.00) instead of -1.00. Used in finance
         alternative::Bool=false, # usually for hex
         mixedfraction::Bool=false,
@@ -159,7 +159,7 @@ function format{T<:Real}( x::T;
         )
     checkwidth = commas
     if conversion == ""
-        if T <: FloatingPoint || T <: Rational && precision != nothing
+        if T <: FloatingPoint || T <: Rational && precision != -1
             actualconv = "f"
         elseif T <: Unsigned
             actualconv = "x"
