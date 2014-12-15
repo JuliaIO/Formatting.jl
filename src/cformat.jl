@@ -97,15 +97,15 @@ function addcommas( s::ASCIIString )
 end
 
 function generate_format_string(;
-        width=nothing,
-        precision= -1,
-        leftjustified=false,
-        zeropadding=false,
-        commas=false,
-        signed=false,
-        positivespace=false,
-        alternative=false,
-        conversion="f" #aAdecEfFiosxX
+        width::Int=-1,
+        precision::Int= -1,
+        leftjustified::Bool=false,
+        zeropadding::Bool=false,
+        commas::Bool=false,
+        signed::Bool=false,
+        positivespace::Bool=false,
+        alternative::Bool=false,
+        conversion::ASCIIString="f" #aAdecEfFiosxX
         )
     s = "%"
     if commas
@@ -114,7 +114,7 @@ function generate_format_string(;
     if alternative && in( conversion[1], "aAeEfFoxX" )
         s *= "#"
     end
-    if zeropadding && !leftjustified && width != nothing
+    if zeropadding && !leftjustified && width != -1
         s *= "0"
     end
 
@@ -124,7 +124,7 @@ function generate_format_string(;
         s *= " "
     end
 
-    if width != nothing
+    if width != -1
         if leftjustified
             s *= "-" * string( width )
         else
@@ -138,8 +138,8 @@ function generate_format_string(;
 end
 
 function format{T<:Real}( x::T;
-        width=nothing,
-        precision= -1,
+        width::Int=-1,
+        precision::Int= -1,
         leftjustified::Bool=false,
         zeropadding::Bool=false, # when right-justified, use 0 instead of space to fill
         commas::Bool=false,
@@ -149,12 +149,12 @@ function format{T<:Real}( x::T;
         parens::Bool=false, # use (1.00) instead of -1.00. Used in finance
         alternative::Bool=false, # usually for hex
         mixedfraction::Bool=false,
-        mixedfractionsep="_",
-        fractionsep="/", # num / den
+        mixedfractionsep::String="_",
+        fractionsep::String="/", # num / den
         fractionwidth::Int = 0,
-        tryden = 0, # if 2 or higher, try to use this denominator, without losing precision
-        suffix="", # useful for units/%
-        autoscale=:none, # :metric, :binary or :finance
+        tryden::Int = 0, # if 2 or higher, try to use this denominator, without losing precision
+        suffix::String="", # useful for units/%
+        autoscale::Symbol=:none, # :metric, :binary or :finance
         conversion::ASCIIString=""
         )
     checkwidth = commas
@@ -342,7 +342,7 @@ function format{T<:Real}( x::T;
         checkwidth = true
     end
 
-    if checkwidth && width != nothing
+    if checkwidth && width != -1
         if length(s) > width
             s = replace( s, " ", "", length(s)-width )
             if length(s) > width && endswith( s, " " )
