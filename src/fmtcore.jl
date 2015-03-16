@@ -57,11 +57,11 @@ _ipre(::Union(_Hex, _HEX)) = "0x"
 _ipre(::_Oct) = "0o"
 _ipre(::_Bin) = "0b"
 
-_digitchar(x::Integer, ::_Bin) = char(x == 0 ? '0' : '1')
-_digitchar(x::Integer, ::_Dec) = char('0' + x)
-_digitchar(x::Integer, ::_Oct) = char('0' + x)
-_digitchar(x::Integer, ::_Hex) = char(x < 10 ? '0' + x : 'a' + (x - 10))
-_digitchar(x::Integer, ::_HEX) = char(x < 10 ? '0' + x : 'A' + (x - 10))
+_digitchar(x::Integer, ::_Bin) = @compat Char(x == 0 ? '0' : '1')
+_digitchar(x::Integer, ::_Dec) = @compat Char('0' + x)
+_digitchar(x::Integer, ::_Oct) = @compat Char('0' + x)
+_digitchar(x::Integer, ::_Hex) = @compat Char(x < 10 ? '0' + x : 'a' + (x - 10))
+_digitchar(x::Integer, ::_HEX) = @compat Char(x < 10 ? '0' + x : 'A' + (x - 10))
 
 _signchar(x::Number, s::Char) = x < 0 ? '-' :
                                 s == '+' ? '+' :
@@ -158,7 +158,7 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
     write(out, '.')
     # print decimal part
     if prec > 0
-        idecv = iround(decv * exp10(prec))
+        idecv = round(Integer, decv * exp10(prec))
         nd = _ndigits(idecv, _Dec())
         if nd < prec
             _repwrite(out, '0', prec - nd)
@@ -171,14 +171,14 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::FloatingPoint)
     # separate sign, integer, and decimal part
     ax = abs(x)
     sch = _signchar(x, fs.sign)
-    intv = itrunc(ax)
+    intv = trunc(Integer, ax)
     decv = ax - intv
 
     # calculate length
     xlen = _ndigits(intv, _Dec()) + 1 + fs.prec
     if sch != '\0'
         xlen += 1
-    end 
+    end
 
     # print
     wid = fs.width
@@ -199,7 +199,7 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::FloatingPoint)
 end
 
 function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Int, ec::Char)
-    intv = itrunc(u)
+    intv = trunc(Integer,u)
     decv = u - intv
     _pfmt_float(out, sch, zs, intv, decv, prec)
     write(out, ec)
@@ -210,8 +210,8 @@ function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::In
         e = -e
     end
     (e1, e2) = divrem(e, 10)
-    write(out, char('0' + e1))
-    write(out, char('0' + e2))
+    write(out, @compat Char('0' + e1))
+    write(out, @compat Char('0' + e2))
 end
 
 
@@ -223,7 +223,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::FloatingPoint)
         e = 0
         u = zero(x)
     else
-        e = ifloor(log10(ax))  # exponent
+        e = floor(Integer,log10(ax))  # exponent
         u = ax / exp10(e)  # significand
     end
 

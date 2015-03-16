@@ -17,9 +17,9 @@
 
 ## FormatSpec type
 
-const _numtypchars = Set('b', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 'x', 'X')
+const _numtypchars = Set(['b', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 'x', 'X'])
 
-_tycls(c::Char) = 
+_tycls(c::Char) =
     (c == 'd' || c == 'n' || c == 'b' || c == 'o' || c == 'x') ? 'i' :
     (c == 'e' || c == 'f' || c == 'g') ? 'f' :
     (c == 'c') ? 'c' :
@@ -29,7 +29,7 @@ _tycls(c::Char) =
 immutable FormatSpec
     cls::Char    # category: 'i' | 'f' | 'c' | 's'
     typ::Char
-    fill::Char    
+    fill::Char
     align::Char
     sign::Char
     width::Int
@@ -121,10 +121,10 @@ function FormatSpec(s::String)
             if a4[1] == '0'
                 _zpad = true
                 if length(a4) > 1
-                    _width = int(a4[2:end])
+                    _width = parseint(Int,a4[2:end])
                 end
             else
-                _width = int(a4)
+                _width = parseint(Int,a4)
             end
         end
 
@@ -135,7 +135,7 @@ function FormatSpec(s::String)
 
         # a6 [.prec]
         if a6 != nothing
-            _prec = int(a6[2:end])
+            _prec = parseint(Int,a6[2:end])
         end
 
         # a7: [type]
@@ -145,7 +145,7 @@ function FormatSpec(s::String)
     end
 
     return FormatSpec(_typ;
-                      fill=_fill, 
+                      fill=_fill,
                       align=_align,
                       sign=_sign,
                       width=_width,
@@ -172,12 +172,12 @@ function printfmt(io::IO, fs::FormatSpec, x)
     cls = fs.cls
     ty = fs.typ
     if cls == 'i'
-        ix = integer(x)
+        ix = @compat Integer(x)
         ty == 'd' || ty == 'n' ? _pfmt_i(io, fs, ix, _Dec()) :
         ty == 'x' ? _pfmt_i(io, fs, ix, _Hex()) :
         ty == 'X' ? _pfmt_i(io, fs, ix, _HEX()) :
         ty == 'o' ? _pfmt_i(io, fs, ix, _Oct()) :
-        _pfmt_i(io, fs, ix, _Bin())  
+        _pfmt_i(io, fs, ix, _Bin())
     elseif cls == 'f'
         fx = float(x)
         if isfinite(fx)
@@ -190,7 +190,7 @@ function printfmt(io::IO, fs::FormatSpec, x)
     elseif cls == 's'
         _pfmt_s(io, fs, _srepr(x))
     else # cls == 'c'
-        _pfmt_s(io, fs, char(x))
+        _pfmt_s(io, fs, @compat Char(x))
     end
 end
 
@@ -198,6 +198,3 @@ printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
 
 fmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
 fmt(spec::String, x) = fmt(FormatSpec(spec), x)
-
-
- 
