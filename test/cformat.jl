@@ -23,7 +23,7 @@ function test_equality()
         l.args[2].args[2] = Expr( :macrocall, symbol( "@sprintf" ), fmt, :x )
         mfmtr = eval( l )
         for i in 1:10000
-            j = int( erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
+            j = round(Int, erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
             expect = mfmtr( j )
             actual = sprintf1( fmt, j )
             @test expect == actual

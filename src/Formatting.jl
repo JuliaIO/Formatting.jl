@@ -7,6 +7,7 @@ module Formatting
         printfmt, printfmtln, fmt, format,
         sprintf1, generate_formatter
 
+    using Compat
 
     include("cformat.jl" )
     include("fmtspec.jl")

@@ -28,12 +28,12 @@ function make_argspec(s::String, pos::Int)
     if !isempty(s)
         ifil = searchindex(s, "|>")
         if ifil == 0
-            iarg = int(s)
+            iarg = parseint(Int,s)
         else
-            iarg = ifil > 1 ? int(s[1:ifil-1]) : -1
+            iarg = ifil > 1 ? parseint(Int,s[1:ifil-1]) : -1
             hasfil = true
             ff = eval(symbol(s[ifil+2:end]))
-        end       
+        end
     end
 
     if pos > 0

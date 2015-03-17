@@ -6,12 +6,16 @@ function sprintf1( fmt::ASCIIString, x )
     f( x )
 end
 
+if VERSION < v"0.4-"
+    const base64encode = base64
+end
+
 function generate_formatter( fmt::ASCIIString )
     global formatters
     if haskey( formatters, fmt )
         return formatters[fmt]
     end
-    func = symbol( "sprintf_" * replace( base64( fmt ), "=", "!" ) )
+    func = symbol( "sprintf_" * replace( base64encode( fmt ), "=", "!" ) )
 
     if !contains( fmt, "'" )
         test = Base.Printf.parse( fmt )
@@ -245,7 +249,7 @@ function format{T<:Real}( x::T;
     fractional = 0
     if T <: Rational && mixedfraction
         actualconv = "d"
-        actualx = int( trunc( x ) )
+        actualx = trunc( Int, x )
         fractional = abs(x) - abs(actualx)
     else
         if parens && !in( actualconv[1], "xX" )
