@@ -121,6 +121,12 @@ fs = FormatSpec("d")
 @test fmt("*<8.2f", -8.376) == "-8.38***"
 @test fmt("*>8.2f", -8.376) == "***-8.38"
 
+@test fmt(".2f", 0.999) == "1.00"
+@test fmt(".2f", 0.996) == "1.00"
+# Floating point error can upset this one (i.e. 0.99500000 or 0.994999999)
+@test (fmt(".2f", 0.995) == "1.00" || fmt(".2f", 0.995) == "0.99")
+@test fmt(".2f", 0.994) == "0.99"
+
 # format floating point (e)
 
 @test fmt("E", 0.0) == "0.000000E+00"
@@ -140,6 +146,14 @@ fs = FormatSpec("d")
 @test fmt("012.2e", 13.89) == "00001.39e+01"
 @test fmt("012.2e", -13.89) == "-0001.39e+01"
 @test fmt("+012.2e", 13.89) == "+0001.39e+01"
+
+@test fmt(".1e", 0.999) == "1.0e+00"
+@test fmt(".1e", 0.996) == "1.0e+00"
+# Floating point error can upset this one (i.e. 0.99500000 or 0.994999999)
+@test (fmt(".1e", 0.995) == "1.0e+00" || fmt(".1e", 0.995) == "9.9e-01")
+@test fmt(".1e", 0.994) == "9.9e-01"
+@test fmt(".1e", 0.6) == "6.0e-01"
+@test fmt(".1e", 0.9) == "9.0e-01"
 
 # format special floating point value
 
