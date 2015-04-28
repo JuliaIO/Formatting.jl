@@ -121,10 +121,10 @@ function FormatSpec(s::String)
             if a4[1] == '0'
                 _zpad = true
                 if length(a4) > 1
-                    _width = parseint(Int,a4[2:end])
+                    _width = parse(Int,a4[2:end])
                 end
             else
-                _width = parseint(Int,a4)
+                _width = parse(Int,a4)
             end
         end
 
@@ -135,7 +135,7 @@ function FormatSpec(s::String)
 
         # a6 [.prec]
         if a6 != nothing
-            _prec = parseint(Int,a6[2:end])
+            _prec = parse(Int,a6[2:end])
         end
 
         # a7: [type]
