@@ -148,6 +148,11 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
     if zs > 0
         _repwrite(out, '0', zs)
     end
+    idecv = round(Integer, decv * exp10(prec))
+    if idecv == exp10(prec)
+        intv += 1
+        idecv = 0
+    end
     # print integer part
     if intv == 0
         write(out, '0')
@@ -158,7 +163,6 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
     write(out, '.')
     # print decimal part
     if prec > 0
-        idecv = round(Integer, decv * exp10(prec))
         nd = _ndigits(idecv, _Dec())
         if nd < prec
             _repwrite(out, '0', prec - nd)
@@ -201,6 +205,14 @@ end
 function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Int, ec::Char)
     intv = trunc(Integer,u)
     decv = u - intv
+    if round(Integer, decv * exp10(prec)) == exp10(prec)
+        intv += 1
+        if intv == 10
+            intv = 1
+            e += 1
+        end
+        decv = 0.
+    end
     _pfmt_float(out, sch, zs, intv, decv, prec)
     write(out, ec)
     if e >= 0
