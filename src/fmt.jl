@@ -57,7 +57,7 @@ function default!{T}(::Type{T}, syms::Symbol...; kwargs...)
     # otherwise update the spec
     dspec = defaultSpec(T)
     dspec.fspec = FormatSpec(dspec.fspec; kwargs...)
-    
+
   else
     d = addKWArgsFromSymbols(kwargs, syms...)
     default!(T; d...)
@@ -85,8 +85,17 @@ end
 # TODO: do more caching to optimize repeated calls
 
 # creates a new FormatSpec by overriding the defaults and passes it to cfmt
-fmt(x; kwargs...) = cfmt(isempty(kwargs) ? spec(x) : FormatSpec(spec(x); kwargs...), x)
+function fmt(x; kwargs...)
+  fspec = isempty(kwargs) ? spec(x) : FormatSpec(spec(x); kwargs...)
+  s = cfmt(fspec, x)
 
+  # add the commas now... I was confused as to when this is done currently
+  if fspec.tsep
+    dpos = findfirst(s, '.')
+    return string(addcommas(s[1:dpos-1]), '.', s[dpos+1:end])
+  end
+  s
+end
 
 # some helper method calls
 fmt(x, prec::Int, args...; kwargs...) = fmt(x, args...; prec=prec, kwargs...)
