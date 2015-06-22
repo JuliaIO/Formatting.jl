@@ -80,6 +80,11 @@ function default!(syms::Symbol...; kwargs...)
 end
 
 
+function optionalCommas(x::Real, s::String)
+  dpos = findfirst(s, '.')
+  return string(addcommas(s[1:dpos-1]), '.', s[dpos+1:end])
+end
+optionalCommas(x, s::String) = s
 
 
 # TODO: do more caching to optimize repeated calls
@@ -91,8 +96,7 @@ function fmt(x; kwargs...)
 
   # add the commas now... I was confused as to when this is done currently
   if fspec.tsep
-    dpos = findfirst(s, '.')
-    return string(addcommas(s[1:dpos-1]), '.', s[dpos+1:end])
+    return optionalCommas(x, s)
   end
   s
 end
