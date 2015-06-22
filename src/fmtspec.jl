@@ -57,6 +57,19 @@ immutable FormatSpec
         end
         new(cls, typ, fill, align, sign, width, prec, ipre, zpad, tsep)
     end
+
+    # copy constructor with overrides
+    function FormatSpec(spec::FormatSpec;
+               fill::Char=spec.fill,
+               align::Char=spec.align,
+               sign::Char=spec.sign,
+               width::Int=spec.width,
+               prec::Int=spec.prec,
+               ipre::Bool=spec.ipre,
+               zpad::Bool=spec.zpad,
+               tsep::Bool=spec.tsep)
+        new(spec.cls, spec.typ, fill, align, sign, width, prec, ipre, zpad, tsep)
+    end
 end
 
 function show(io::IO, fs::FormatSpec)
@@ -200,5 +213,5 @@ end
 
 printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
 
-fmt(fs::FormatSpec, x) = sprint(printfmt, fs, x)
-fmt(spec::AbstractString, x) = fmt(FormatSpec(spec), x)
+cfmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
+cfmt(spec::String, x) = cfmt(FormatSpec(spec), x)
