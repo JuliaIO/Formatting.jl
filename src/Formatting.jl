@@ -4,8 +4,11 @@ module Formatting
 
     export
         FormatSpec, FormatExpr,
-        printfmt, printfmtln, fmt, format,
+        printfmt, printfmtln, cfmt, format,
         sprintf1, generate_formatter
+
+    export
+        fmt, default!
 
     using Compat
 
@@ -13,5 +16,6 @@ module Formatting
     include("fmtspec.jl")
     include("fmtcore.jl")
     include("formatexpr.jl")
+    include("fmt.jl")
 
 end # module
