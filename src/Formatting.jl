@@ -8,7 +8,7 @@ module Formatting
         sprintf1, generate_formatter
 
     export
-        fmt, default!
+        fmt, fmt_default, fmt_default!
 
     using Compat
 
