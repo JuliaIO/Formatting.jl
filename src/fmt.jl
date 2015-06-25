@@ -3,6 +3,7 @@
 # This uses the more basic formatting based on FormatSpec and the cfmt method (formerly called fmt, which I repurposed)
 
 # TODO: swap out FormatSpec for something that is able to use the "format" method, which has more options for units, prefixes, etc
+# TODO: support rational numbers, autoscale, etc as in "format"
 
 # --------------------------------------------------------------------------------------------------
 
@@ -59,7 +60,11 @@ end
 defaultSpec{T<:Integer}(::Type{T}) = DEFAULT_FORMATTERS[Integer]
 defaultSpec{T<:FloatingPoint}(::Type{T}) = DEFAULT_FORMATTERS[FloatingPoint]
 defaultSpec{T<:String}(::Type{T}) = DEFAULT_FORMATTERS[String]
-defaultSpec{T}(::Type{T}) = get(DEFAULT_FORMATTERS, T, error("Missing default spec for type $T... call default!(T, c)"))
+function defaultSpec{T}(::Type{T})
+  get(DEFAULT_FORMATTERS, T) do
+    error("Missing default spec for type $T... call default!(T, c): $DEFAULT_FORMATTERS")
+  end
+end
 defaultSpec(x) = defaultSpec(typeof(x))
 
 fmt_default{T}(::Type{T}) = defaultSpec(T).fspec
@@ -98,10 +103,6 @@ function fmt_default!(syms::Symbol...; kwargs...)
     for k in keys(DEFAULT_FORMATTERS)
       fmt_default!(k; kwargs...)
     end
-    # fmt_default!(Integer; kwargs...)
-    # fmt_default!(FloatingPoint; kwargs...)
-    # fmt_default!(Char; kwargs...)
-    # fmt_default!(String; kwargs...)
   else
     d = addKWArgsFromSymbols(kwargs, syms...)
     fmt_default!(; d...)
@@ -112,14 +113,36 @@ end
 
 # --------------------------------------------------------------------------------------------------
 
-function optionalCommas(x::Real, s::String)
+# TODO: get rid of this entire hack by moving commas into cfmt
+
+function optionalCommas(x::Real, s::String, fspec::FormatSpec)
   dpos = findfirst(s, '.')
+  prevwidth = length(s)
+
   if dpos == 0
-    return addcommas(s)
+    s = addcommas(s)
+  else
+    s = string(addcommas(s[1:dpos-1]), '.', s[dpos+1:end])
   end
-  string(addcommas(s[1:dpos-1]), '.', s[dpos+1:end])
+
+  # check for excess width from commas
+  w = length(s)
+  if fspec.width > 0 && w > fspec.width && w > prevwidth
+    # we may have made the string too wide with those commas... gotta fix it
+    s = strip(s)
+    n = fspec.width - length(s)
+    if fspec.align == '<' # left alignment
+      s = string(s, " "^n)
+    else
+      s = string(" "^n, s)
+    end 
+  end
+
+  s
 end
-optionalCommas(x, s::String) = s
+optionalCommas(x, s::String, fspec::FormatSpec) = s
+
+# --------------------------------------------------------------------------------------------------
 
 
 # TODO: do more caching to optimize repeated calls
@@ -133,7 +156,7 @@ function fmt(x; kwargs...)
 
   # add the commas now... I was confused as to when this is done currently
   if fspec.tsep
-    return optionalCommas(x, s)
+    return optionalCommas(x, s, fspec)
   end
   s
 end
