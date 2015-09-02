@@ -1,7 +1,10 @@
 # Formatting
 
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
-[![Build Status](https://travis-ci.org/lindahua/Formatting.jl.png?branch=master)](https://travis-ci.org/lindahua/Formatting.jl)
+
+[![Build Status](https://travis-ci.org/JuliaLang/Formatting.jl.png?branch=master)](https://travis-ci.org/JuliaLang/Formatting.jl)
+![Formatting](http://pkg.julialang.org/badges/Formatting_0.3.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.3)
+![Formatting](http://pkg.julialang.org/badges/Formatting_0.4.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.4)
 
 ---------------
 
