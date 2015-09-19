@@ -77,7 +77,7 @@ end
 
 const _spec_regex = r"^(.?[<>])?([ +-])?(#)?(\d+)?(,)?(.\d+)?([bcdeEfFgGnosxX])?$"
 
-function FormatSpec(s::String)
+function FormatSpec(s::AbstractString)
     # default spec
     _fill = ' '
     _align = '\0'
@@ -165,7 +165,7 @@ type _HEX end
 type _Bin end
 
 _srepr(x) = repr(x)
-_srepr(x::String) = x
+_srepr(x::AbstractString) = x
 _srepr(x::Char) = string(x)
 
 function printfmt(io::IO, fs::FormatSpec, x)
@@ -197,4 +197,4 @@ end
 printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
 
 fmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
-fmt(spec::String, x) = fmt(FormatSpec(spec), x)
+fmt(spec::AbstractString, x) = fmt(FormatSpec(spec), x)

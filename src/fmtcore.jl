@@ -12,7 +12,7 @@ end
 
 ### print string or char
 
-function _pfmt_s(out::IO, fs::FormatSpec, s::Union(String,Char))
+@compat function _pfmt_s(out::IO, fs::FormatSpec, s::Union{AbstractString,Char})
     wid = fs.width
     slen = length(s)
     if wid <= slen
@@ -35,12 +35,12 @@ end
 _mul(x::Integer, ::_Dec) = x * 10
 _mul(x::Integer, ::_Bin) = x << 1
 _mul(x::Integer, ::_Oct) = x << 3
-_mul(x::Integer, ::Union(_Hex, _HEX)) = x << 4
+@compat _mul(x::Integer, ::Union{_Hex, _HEX}) = x << 4
 
 _div(x::Integer, ::_Dec) = div(x, 10)
 _div(x::Integer, ::_Bin) = x >> 1
 _div(x::Integer, ::_Oct) = x >> 3
-_div(x::Integer, ::Union(_Hex, _HEX)) = x >> 4
+@compat _div(x::Integer, ::Union{_Hex, _HEX}) = x >> 4
 
 function _ndigits(x::Integer, op)  # suppose x is non-negative
     m = 1
@@ -53,7 +53,7 @@ function _ndigits(x::Integer, op)  # suppose x is non-negative
 end
 
 _ipre(op) = ""
-_ipre(::Union(_Hex, _HEX)) = "0x"
+@compat _ipre(::Union{_Hex, _HEX}) = "0x"
 _ipre(::_Oct) = "0o"
 _ipre(::_Bin) = "0b"
 
@@ -171,7 +171,7 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
     end
 end
 
-function _pfmt_f(out::IO, fs::FormatSpec, x::FloatingPoint)
+function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     # separate sign, integer, and decimal part
     ax = abs(x)
     sch = _signchar(x, fs.sign)
@@ -227,7 +227,7 @@ function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::In
 end
 
 
-function _pfmt_e(out::IO, fs::FormatSpec, x::FloatingPoint)
+function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
     # extract sign, significand, and exponent
     ax = abs(x)
     sch = _signchar(x, fs.sign)
@@ -265,7 +265,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::FloatingPoint)
 end
 
 
-function _pfmt_g(out::IO, fs::FormatSpec, x::FloatingPoint)
+function _pfmt_g(out::IO, fs::FormatSpec, x::AbstractFloat)
     # number decomposition
     ax = abs(x)
     if 1.0e-4 <= ax < 1.0e6
@@ -275,7 +275,7 @@ function _pfmt_g(out::IO, fs::FormatSpec, x::FloatingPoint)
     end
 end
 
-function _pfmt_specialf(out::IO, fs::FormatSpec, x::FloatingPoint)
+function _pfmt_specialf(out::IO, fs::FormatSpec, x::AbstractFloat)
     if isinf(x) 
         if x > 0
             _pfmt_s(out, fs, "Inf")

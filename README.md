@@ -89,7 +89,7 @@ One can use ``printfmt`` and ``printfmtln`` for formatted printing:
     printfmt(FormatExpr("{1:d}", 10)) # OK
     ```
 
-    
+
 - **printfmtln**(io, fe, args...)
 
 - **printfmtln**(fe, args...)
@@ -103,7 +103,7 @@ One can use ``fmt`` to format a single value into a string, or ``format`` to for
 - **fmt**(fspec, a)
 
     Format a single value using a format specification given by ``fspec``, where ``fspec`` can be either a string or an instance of ``FormatSpec``.
-    
+
 - **format**(fe, args...)
 
     Format arguments using a format expression given by ``fe``, where ``fe`` can be either a string or an instance of ``FormatSpec``.
