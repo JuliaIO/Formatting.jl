@@ -13,13 +13,13 @@ immutable ArgSpec
     end
 end
 
-getarg(args, sp::ArgSpec) = 
+getarg(args, sp::ArgSpec) =
     (a = args[sp.argidx]; sp.hasfilter ? sp.filter(a) : a)
 
 # pos > 0: must not have iarg in expression (use pos+1), return (entry, pos + 1)
 # pos < 0: must have iarg in expression, return (entry, -1)
 # pos = 0: no positional argument before, can be either, return (entry, 1) or (entry, -1)
-function make_argspec(s::String, pos::Int)
+function make_argspec(s::AbstractString, pos::Int)
     # for argument position
     iarg::Int = -1
     hasfil::Bool = false
@@ -60,7 +60,7 @@ immutable FormatEntry
     spec::FormatSpec
 end
 
-function make_formatentry(s::String, pos::Int)
+function make_formatentry(s::AbstractString, pos::Int)
     @assert s[1] == '{' && s[end] == '}'
     sc = s[2:end-1]
     icolon = search(sc, ':')
@@ -86,7 +86,7 @@ end
 
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
-function find_next_entry_open(s::String, si::Int)
+function find_next_entry_open(s::AbstractString, si::Int)
     slen = length(s)
     p = search(s, '{', si)
     p < slen || _raise_unmatched_lbrace()
@@ -103,7 +103,7 @@ function find_next_entry_open(s::String, si::Int)
     return (p, utf8(pre))
 end
 
-function find_next_entry_close(s::String, si::Int)
+function find_next_entry_close(s::AbstractString, si::Int)
     slen = length(s)
     p = search(s, '}', si)
     p > 0 || _raise_unmatched_lbrace()
@@ -111,7 +111,7 @@ function find_next_entry_close(s::String, si::Int)
     return p
 end
 
-function FormatExpr(s::String)
+function FormatExpr(s::AbstractString)
     slen = length(s)
     
     # init
@@ -159,12 +159,11 @@ function printfmt(io::IO, fe::FormatExpr, args...)
     end
 end
 
-printfmt(io::IO, fe::String, args...) = printfmt(io, FormatExpr(fe), args...)
-printfmt(fe::Union(String,FormatExpr), args...) = printfmt(STDOUT, fe, args...)
+printfmt(io::IO, fe::AbstractString, args...) = printfmt(io, FormatExpr(fe), args...)
+@compat printfmt(fe::Union{AbstractString,FormatExpr}, args...) = printfmt(STDOUT, fe, args...)
 
-printfmtln(io::IO, fe::Union(String,FormatExpr), args...) = (printfmt(io, fe, args...); println(io))
-printfmtln(fe::Union(String,FormatExpr), args...) = printfmtln(STDOUT, fe, args...)
+@compat printfmtln(io::IO, fe::Union{AbstractString,FormatExpr}, args...) = (printfmt(io, fe, args...); println(io))
+@compat printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(STDOUT, fe, args...)
 
-format(fe::Union(String,FormatExpr), args...) = 
+@compat format(fe::Union{AbstractString,FormatExpr}, args...) =
     (buf = IOBuffer(); printfmt(buf, fe, args...); bytestring(buf))
-

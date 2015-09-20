@@ -6,10 +6,6 @@ function sprintf1( fmt::ASCIIString, x )
     f( x )
 end
 
-if VERSION < v"0.4-"
-    const base64encode = base64
-end
-
 function generate_formatter( fmt::ASCIIString )
     global formatters
     if haskey( formatters, fmt )
@@ -153,17 +149,17 @@ function format{T<:Real}( x::T;
         parens::Bool=false, # use (1.00) instead of -1.00. Used in finance
         alternative::Bool=false, # usually for hex
         mixedfraction::Bool=false,
-        mixedfractionsep::String="_",
-        fractionsep::String="/", # num / den
+        mixedfractionsep::AbstractString="_",
+        fractionsep::AbstractString="/", # num / den
         fractionwidth::Int = 0,
         tryden::Int = 0, # if 2 or higher, try to use this denominator, without losing precision
-        suffix::String="", # useful for units/%
+        suffix::AbstractString="", # useful for units/%
         autoscale::Symbol=:none, # :metric, :binary or :finance
         conversion::ASCIIString=""
         )
     checkwidth = commas
     if conversion == ""
-        if T <: FloatingPoint || T <: Rational && precision != -1
+        if T <: AbstractFloat || T <: Rational && precision != -1
             actualconv = "f"
         elseif T <: Unsigned
             actualconv = "x"
@@ -182,7 +178,7 @@ function format{T<:Real}( x::T;
     if T <: Rational && conversion == "s"
         stripzeros = false
     end
-    if ( T <: FloatingPoint && actualconv == "f" || T <: Integer ) && autoscale != :none
+    if ( T <: AbstractFloat && actualconv == "f" || T <: Integer ) && autoscale != :none
         actualconv = "f"
         if autoscale == :metric
             scales = [
@@ -202,7 +198,7 @@ function format{T<:Real}( x::T;
                         break
                     end
                 end
-            elseif T <: FloatingPoint
+            elseif T <: AbstractFloat
                 smallscales = [
                     ( 1e-12, "p" ),
                     ( 1e-9,  "n" ),
