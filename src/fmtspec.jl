@@ -167,7 +167,10 @@ type _Bin end
 _srepr(x) = repr(x)
 _srepr(x::AbstractString) = x
 _srepr(x::Char) = string(x)
-_srepr(x::Enum) = string(x)
+
+if isdefined(:Enum)
+    _srepr(x::Enum) = string(x)
+end
 
 function printfmt(io::IO, fs::FormatSpec, x)
     cls = fs.cls
