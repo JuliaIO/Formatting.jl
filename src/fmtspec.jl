@@ -39,7 +39,7 @@ immutable FormatSpec
     tsep::Bool   # whether to use thousand-separator
 
     function FormatSpec(typ::Char;
-               fill::Char=' ', 
+               fill::Char=' ',
                align::Char='\0',
                sign::Char='-',
                width::Int=-1,
@@ -167,6 +167,10 @@ type _Bin end
 _srepr(x) = repr(x)
 _srepr(x::AbstractString) = x
 _srepr(x::Char) = string(x)
+
+if isdefined(:Enum)
+    _srepr(x::Enum) = string(x)
+end
 
 function printfmt(io::IO, fs::FormatSpec, x)
     cls = fs.cls
