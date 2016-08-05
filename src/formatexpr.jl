@@ -32,7 +32,7 @@ function make_argspec(s::AbstractString, pos::Int)
         else
             iarg = ifil > 1 ? parse(Int,s[1:ifil-1]) : -1
             hasfil = true
-            ff = eval(symbol(s[ifil+2:end]))
+            ff = eval(@compat Symbol(s[ifil+2:end]))
         end
     end
 
@@ -47,7 +47,7 @@ function make_argspec(s::AbstractString, pos::Int)
         else
             pos = -1
         end
-    end 
+    end
 
     return (ArgSpec(iarg, hasfil, ff), pos)
 end
@@ -78,10 +78,10 @@ end
 ### Format expression
 
 type FormatExpr
-    prefix::UTF8String
-    suffix::UTF8String
+    prefix::Compat.UTF8String
+    suffix::Compat.UTF8String
     entries::Vector{FormatEntry}
-    inter::Vector{UTF8String}
+    inter::Vector{Compat.UTF8String}
 end
 
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
@@ -100,7 +100,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
         pre = replace(pre, "{{", '{')
         pre = replace(pre, "}}", '}')
     end
-    return (p, utf8(pre))
+    return (p, convert(Compat.UTF8String, pre))
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
@@ -113,12 +113,12 @@ end
 
 function FormatExpr(s::AbstractString)
     slen = length(s)
-    
+
     # init
-    prefix = utf8("")
-    suffix = utf8("")
+    prefix = convert(Compat.UTF8String, "")
+    suffix = convert(Compat.UTF8String, "")
     entries = FormatEntry[]
-    inter = UTF8String[]
+    inter = Compat.UTF8String[]
 
     # scan
     (p, prefix) = find_next_entry_open(s, 1)
@@ -166,4 +166,4 @@ printfmt(io::IO, fe::AbstractString, args...) = printfmt(io, FormatExpr(fe), arg
 @compat printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(STDOUT, fe, args...)
 
 @compat format(fe::Union{AbstractString,FormatExpr}, args...) =
-    (buf = IOBuffer(); printfmt(buf, fe, args...); bytestring(buf))
+    sprint(printfmt, fe, args...)

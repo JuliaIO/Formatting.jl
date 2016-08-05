@@ -1,13 +1,14 @@
 using Formatting
+using Compat
 using Base.Test
 
 function test_equality()
     println( "test cformat equality...")
     srand(10)
-    fmts = ASCIIString[ "%10.4f", "%f", "%e", "%10f", "%.3f", "%.3e" ]
+    fmts = Compat.ASCIIString[ "%10.4f", "%f", "%e", "%10f", "%.3f", "%.3e" ]
     for fmt in fmts
         l = :( x-> x )
-        l.args[2].args[2] = Expr( :macrocall, symbol( "@sprintf" ), fmt, :x )
+        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
         mfmtr = eval( l )
         for i in 1:10000
             n = erfinv( rand() * 1.99 - 1.99/2.0 )
@@ -17,10 +18,10 @@ function test_equality()
         end
     end
 
-    fmts = ASCIIString[ "%d", "%10d", "%010d", "%-10d" ]
+    fmts = Compat.ASCIIString[ "%d", "%10d", "%010d", "%-10d" ]
     for fmt in fmts
         l = :( x-> x )
-        l.args[2].args[2] = Expr( :macrocall, symbol( "@sprintf" ), fmt, :x )
+        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
         mfmtr = eval( l )
         for i in 1:10000
             j = round(Int, erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
