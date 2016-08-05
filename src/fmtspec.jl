@@ -200,5 +200,5 @@ end
 
 printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
 
-fmt(fs::FormatSpec, x) = (buf = IOBuffer(); printfmt(buf, fs, x); bytestring(buf))
+fmt(fs::FormatSpec, x) = sprint(printfmt, fs, x)
 fmt(spec::AbstractString, x) = fmt(FormatSpec(spec), x)
