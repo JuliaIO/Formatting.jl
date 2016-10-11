@@ -12,7 +12,7 @@ end
 
 ### print string or char
 
-@compat function _pfmt_s(out::IO, fs::FormatSpec, s::Union{AbstractString,Char})
+function _pfmt_s(out::IO, fs::FormatSpec, s::Union{AbstractString,Char})
     wid = fs.width
     slen = length(s)
     if wid <= slen
@@ -35,12 +35,12 @@ end
 _mul(x::Integer, ::_Dec) = x * 10
 _mul(x::Integer, ::_Bin) = x << 1
 _mul(x::Integer, ::_Oct) = x << 3
-@compat _mul(x::Integer, ::Union{_Hex, _HEX}) = x << 4
+_mul(x::Integer, ::Union{_Hex, _HEX}) = x << 4
 
 _div(x::Integer, ::_Dec) = div(x, 10)
 _div(x::Integer, ::_Bin) = x >> 1
 _div(x::Integer, ::_Oct) = x >> 3
-@compat _div(x::Integer, ::Union{_Hex, _HEX}) = x >> 4
+_div(x::Integer, ::Union{_Hex, _HEX}) = x >> 4
 
 function _ndigits(x::Integer, op)  # suppose x is non-negative
     m = 1
@@ -53,39 +53,30 @@ function _ndigits(x::Integer, op)  # suppose x is non-negative
 end
 
 _ipre(op) = ""
-@compat _ipre(::Union{_Hex, _HEX}) = "0x"
+_ipre(::Union{_Hex, _HEX}) = "0x"
 _ipre(::_Oct) = "0o"
 _ipre(::_Bin) = "0b"
 
-_digitchar(x::Integer, ::_Bin) = @compat Char(x == 0 ? '0' : '1')
-_digitchar(x::Integer, ::_Dec) = @compat Char('0' + x)
-_digitchar(x::Integer, ::_Oct) = @compat Char('0' + x)
-_digitchar(x::Integer, ::_Hex) = @compat Char(x < 10 ? '0' + x : 'a' + (x - 10))
-_digitchar(x::Integer, ::_HEX) = @compat Char(x < 10 ? '0' + x : 'A' + (x - 10))
+_digitchar(x::Integer, ::_Bin) = x == 0 ? '0' : '1'
+_digitchar(x::Integer, ::_Dec) = Char(Int('0') + x)
+_digitchar(x::Integer, ::_Oct) = Char(Int('0') + x)
+_digitchar(x::Integer, ::_Hex) = Char(x < 10 ? '0' + x : 'a' + (x - 10))
+_digitchar(x::Integer, ::_HEX) = Char(x < 10 ? '0' + x : 'A' + (x - 10))
 
 _signchar(x::Number, s::Char) = x < 0 ? '-' :
                                 s == '+' ? '+' :
                                 s == ' ' ? ' ' : '\0'
 
-function _pfmt_int{Op}(out::IO, sch::Char, ip::Compat.ASCIIString, zs::Integer, ax::Integer, op::Op)
+function _pfmt_int{Op}(out::IO, sch::Char, ip::ASCIIStr, zs::Integer, ax::Integer, op::Op)
     # print sign
-    if sch != '\0'
-        write(out, sch)
-    end
+    sch != '\0' && write(out, sch)
     # print prefix
-    if !isempty(ip)
-        write(out, ip)
-    end
+    !isempty(ip) && write(out, ip)
     # print padding zeros
-    if zs > 0
-        _repwrite(out, '0', zs)
-    end
+    zs > 0 && _repwrite(out, '0', zs)
     # print actual digits
-    if ax == 0
-        write(out, '0')
-    else
-        _pfmt_intdigits(out, ax, op)
-    end
+    ax == 0 ? write(out, '0') : _pfmt_intdigits(out, ax, op)
+    nothing
 end
 
 function _pfmt_intdigits{Op,T<:Integer}(out::IO, ax::T, op::Op)
@@ -222,8 +213,8 @@ function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::In
         e = -e
     end
     (e1, e2) = divrem(e, 10)
-    write(out, @compat Char('0' + e1))
-    write(out, @compat Char('0' + e2))
+    write(out, Char('0' + e1))
+    write(out, Char('0' + e2))
 end
 
 

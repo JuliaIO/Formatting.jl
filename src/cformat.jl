@@ -1,17 +1,17 @@
-formatters = Dict{ Compat.ASCIIString, Function }()
+formatters = Dict{ ASCIIStr, Function }()
 
-function sprintf1( fmt::Compat.ASCIIString, x )
+function cfmt( fmt::ASCIIStr, x )
     global formatters
     f = generate_formatter( fmt )
     f( x )
 end
 
-function generate_formatter( fmt::Compat.ASCIIString )
+function generate_formatter( fmt::ASCIIStr )
     global formatters
     if haskey( formatters, fmt )
         return formatters[fmt]
     end
-    func = @compat Symbol("sprintf_", replace(base64encode(fmt), "=", "!"))
+    func = Symbol( "sprintf_", replace( base64encode( fmt ), "=", "!" ) )
 
     if !contains( fmt, "'" )
         test = Base.Printf.parse( fmt )
@@ -78,7 +78,7 @@ function generate_formatter( fmt::Compat.ASCIIString )
     f
 end
 
-function addcommas( s::Compat.ASCIIString )
+function addcommas( s::ASCIIStr )
     len = length(s)
     t = ""
     for i in 1:3:len
@@ -105,35 +105,27 @@ function generate_format_string(;
         signed::Bool=false,
         positivespace::Bool=false,
         alternative::Bool=false,
-        conversion::Compat.ASCIIString="f" #aAdecEfFiosxX
-        )
+        conversion::ASCIIStr="f" #aAdecEfFiosxX
+    )
+    
     s = "%"
-    if commas
-        s *= "'"
-    end
-    if alternative && in( conversion[1], "aAeEfFoxX" )
-        s *= "#"
-    end
-    if zeropadding && !leftjustified && width != -1
-        s *= "0"
-    end
-
+    commas &&
+        (s *= "'")
+    alternative && in( conversion[1], "aAeEfFoxX" ) &&
+        (s *= "#")
+    zeropadding && !leftjustified && width != -1 &&
+        (s *= "0")
     if signed
         s *= "+"
     elseif positivespace
         s *= " "
     end
-
     if width != -1
-        if leftjustified
-            s *= "-" * string( width )
-        else
-            s *= string( width )
-        end
+        leftjustified && (s *= "-")
+        s *= string( width )
     end
-    if precision != -1
-        s *= "." * string( precision )
-    end
+    precision != -1 &&
+        (s *= "." * string( precision ))
     s * conversion
 end
 
@@ -149,13 +141,13 @@ function format{T<:Real}( x::T;
         parens::Bool=false, # use (1.00) instead of -1.00. Used in finance
         alternative::Bool=false, # usually for hex
         mixedfraction::Bool=false,
-        mixedfractionsep::AbstractString="_",
-        fractionsep::AbstractString="/", # num / den
+        mixedfractionsep::UTF8Str="_",
+        fractionsep::UTF8Str="/", # num / den
         fractionwidth::Int = 0,
         tryden::Int = 0, # if 2 or higher, try to use this denominator, without losing precision
-        suffix::AbstractString="", # useful for units/%
+        suffix::UTF8Str="", # useful for units/%
         autoscale::Symbol=:none, # :metric, :binary or :finance
-        conversion::Compat.ASCIIString=""
+        conversion::ASCIIStr=""
         )
     checkwidth = commas
     if conversion == ""
@@ -254,16 +246,17 @@ function format{T<:Real}( x::T;
             actualx = x
         end
     end
-    s = sprintf1( generate_format_string( width=width,
-        precision=precision,
-        leftjustified=leftjustified,
-        zeropadding=zeropadding,
-        commas=commas,
-        signed=signed,
-        positivespace=positivespace,
-        alternative=alternative,
-        conversion=actualconv
-    ),actualx)
+    s = cfmt( generate_format_string( width=width,
+                                      precision=precision,
+                                      leftjustified=leftjustified,
+                                      zeropadding=zeropadding,
+                                      commas=commas,
+                                      signed=signed,
+                                      positivespace=positivespace,
+                                      alternative=alternative,
+                                      conversion=actualconv
+                                      ),
+              actualx)
 
     if T <:Rational && conversion == "s"
         if mixedfraction && fractional != 0
