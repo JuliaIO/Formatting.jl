@@ -5,10 +5,10 @@ using Base.Test
 x = 1234.56789
 
 @test fmt(x) == "1234.567890"
-@test fmt(x,2) == "1234.57"
-@test fmt(x,3,10) == "  1234.568"
-@test fmt(x,3,10,:left) == "1234.568  "
-@test fmt(x,3,10,:ljust) == "1234.568  "
+@test fmt(x;prec=2) == "1234.57"
+@test fmt(x,10,3) == "  1234.568"
+@test fmt(x,10,3,:left) == "1234.568  "
+@test fmt(x,10,3,:ljust) == "1234.568  "
 @test fmt(x,:commas) == "1,234.567890"
 
 i = 1234567
