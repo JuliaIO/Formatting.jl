@@ -1,6 +1,6 @@
 # performance testing
 
-using Formatting
+using Format
 
 # performance of format parsing
 

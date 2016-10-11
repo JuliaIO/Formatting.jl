@@ -1,4 +1,4 @@
-module Formatting
+module Format
 
     import Base.show
 

@@ -1,4 +1,4 @@
-using Formatting
+using Format
 using Base.Test
 
 # with positional arguments
