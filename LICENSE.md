@@ -1,4 +1,5 @@
-The Formatting.jl package is licensed under the MIT "Expat" License:
+The JuliaString/Format.jl package is licensed under the MIT "Expat" License,
+and is based on the JuliaIO/Formatting.jl package, licensed as follows:
 
 > Copyright (c) 2014: Dahua Lin and contributors.
 >

@@ -1,6 +1,6 @@
 # test format spec parsing
 
-using Formatting
+using Format
 using Base.Test
 
 

@@ -1,29 +1,31 @@
-# Formatting
+# Format
 
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
 
-[![Build Status](https://travis-ci.org/JuliaLang/Formatting.jl.svg?branch=master)](https://travis-ci.org/JuliaLang/Formatting.jl)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.4.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.4)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.5.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.5)
+[![Build Status](https://travis-ci.org/JuliaString/Format.jl.svg?branch=newmaster)](https://travis-ci.org/JuliaString/Format.jl)
+[![Format](http://pkg.julialang.org/badges/Format_0.4.svg)](http://pkg.julialang.org/?pkg=Format&ver=0.4)
+[![Format](http://pkg.julialang.org/badges/Format_0.5.svg)](http://pkg.julialang.org/?pkg=Format&ver=0.5)
 
 ---------------
 
 
 ## Getting Started
 
-This package is pure Julia. Setting up this package is like setting up other Julia packages:
+This package is pure Julia.
+This package is not yet registered, so it needs to be cloned and checked out:
 
 ```julia
-Pkg.add("Formatting")
+Pkg.clone("https://github.com/JuliaString/Format.jl")
+Pkg.checkout("Format", "newmaster")
 ```
 
 To start using the package, you can simply write
 
 ```julia
-using Formatting
+using Format
 ```
 
-This package depends on Julia of version 0.2 or above. It has no other dependencies. The package is MIT-licensed.
+This package depends on Julia of version 0.4 or above. It has no other dependencies. The package is MIT-licensed.
 
 
 ## Python-style Types and Functions
@@ -133,7 +135,7 @@ stripping trailing zeros, and mixed fractions.
 ### Usage and Implementation
 
 The idea here is that the package compiles a function only once for each unique
-format string within the `Formatting.*` name space, so repeated use is faster.
+format string within the `Format.*` name space, so repeated use is faster.
 Unrelated parts of a session using the same format string would reuse the same
 function, avoiding redundant compilation. To avoid the proliferation of
 functions, we limit the usage to only 1 argument. Practical consideration
@@ -142,7 +144,7 @@ seems manageable.
 
 Usage
 ```julia
-using Formatting
+using Format
 
 fmt = "%10.3f"
 s = sprintf1( fmt, 3.14159 ) # usage 1. Quite performant. Easiest to switch to.

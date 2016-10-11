@@ -1,5 +1,4 @@
-
-using Formatting
+using Format
 using Base.Test
 
 # some basic functionality testing
