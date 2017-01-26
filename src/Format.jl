@@ -7,7 +7,7 @@ export pyfmt, cfmt, fmt
 export fmt_default, fmt_default!, reset!, default_spec, default_spec!
 
 # Deal with mess from #16058
-if VERSION >= v"0.5.0"
+@static if VERSION >= v"0.5.0"
     const ASCIIStr = String
     const UTF8Str = String
     const ByteStr = String
