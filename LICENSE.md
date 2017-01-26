@@ -2,6 +2,7 @@ The JuliaString/Format.jl package is licensed under the MIT "Expat" License,
 and is based on the JuliaIO/Formatting.jl package, licensed as follows:
 
 > Copyright (c) 2014: Dahua Lin and contributors.
+> Portions Copyright (c) 2017: Gandalf Software, Inc. (Scott Paul Jones) and other contributors
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the
