@@ -13,7 +13,7 @@ function test_equality()
         for i in 1:10000
             n = erfinv( rand() * 1.99 - 1.99/2.0 )
             expect = mfmtr( n )
-            actual = sprintf1( fmt, n )
+            actual = cfmt( fmt, n )
             @test expect == actual
         end
     end
@@ -26,7 +26,7 @@ function test_equality()
         for i in 1:10000
             j = round(Int, erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
             expect = mfmtr( j )
-            actual = sprintf1( fmt, j )
+            actual = cfmt( fmt, j )
             @test expect == actual
         end
     end
@@ -44,7 +44,7 @@ function native_int()
 end
 function runtime_int()
     for i in 1:200000
-        sprintf1( "%10d", i )
+        cfmt( "%10d", i )
     end
 end
 function runtime_int_bypass()
@@ -70,7 +70,7 @@ end
 function runtime_float()
     srand( 10 )
     for i in 1:200000
-        sprintf1( "%10.4f", erfinv( rand() ) )
+        cfmt( "%10.4f", erfinv( rand() ) )
     end
 end
 function runtime_float_bypass()
@@ -91,14 +91,14 @@ println( "float64 sprintf speed, bypass repeated lookup")
 
 function test_commas()
     println( "\ntest commas..." )
-    @test sprintf1( "%'d", 1000 ) == "1,000"
-    @test sprintf1( "%'d", -1000 ) == "-1,000"
-    @test sprintf1( "%'d", 100 ) == "100"
-    @test sprintf1( "%'d", -100 ) == "-100"
-    @test sprintf1( "%'f", Inf ) == "Inf"
-    @test sprintf1( "%'f", -Inf ) == "-Inf"
-    @test sprintf1( "%'s", 1000.0 ) == "1,000.0"
-    @test sprintf1( "%'s", 1234567.0 ) == "1.234567e6"
+    @test cfmt( "%'d", 1000 ) == "1,000"
+    @test cfmt( "%'d", -1000 ) == "-1,000"
+    @test cfmt( "%'d", 100 ) == "100"
+    @test cfmt( "%'d", -100 ) == "-100"
+    @test cfmt( "%'f", Inf ) == "Inf"
+    @test cfmt( "%'f", -Inf ) == "-Inf"
+    @test cfmt( "%'s", 1000.0 ) == "1,000.0"
+    @test cfmt( "%'s", 1234567.0 ) == "1.234567e6"
 end
 
 function test_format()
