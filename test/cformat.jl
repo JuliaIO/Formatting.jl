@@ -1,15 +1,16 @@
 using Format
-using Compat
 using Base.Test
 
 function test_equality()
     println( "test cformat equality...")
     srand(10)
-    fmts = Compat.ASCIIString[ "%10.4f", "%f", "%e", "%10f", "%.3f", "%.3e" ]
-    for fmt in fmts
-        l = :( x-> x )
-        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
-        mfmtr = eval( l )
+    fmts = [ (x->@sprintf("%10.4f",x), "%10.4f"),
+             (x->@sprintf("%f", x),    "%f"),
+             (x->@sprintf("%e", x),    "%e"),
+             (x->@sprintf("%10f", x),  "%10f"),
+             (x->@sprintf("%.3f", x),  "%.3f"),
+             (x->@sprintf("%.3e", x),  "%.3e")]
+    for (mfmtr,fmt) in fmts
         for i in 1:10000
             n = erfinv( rand() * 1.99 - 1.99/2.0 )
             expect = mfmtr( n )
@@ -18,11 +19,11 @@ function test_equality()
         end
     end
 
-    fmts = Compat.ASCIIString[ "%d", "%10d", "%010d", "%-10d" ]
-    for fmt in fmts
-        l = :( x-> x )
-        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
-        mfmtr = eval( l )
+    fmts = [ (x->@sprintf("%d",x),    "%d"),
+             (x->@sprintf("%10d",x),  "%10d"),
+             (x->@sprintf("%010d",x), "%010d"),
+             (x->@sprintf("%-10d",x), "%-10d")]
+    for (mfmtr,fmt) in fmts
         for i in 1:10000
             j = round(Int, erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
             expect = mfmtr( j )
@@ -89,8 +90,7 @@ println( "float64 sprintf speed")
 println( "float64 sprintf speed, bypass repeated lookup")
 @time runtime_float_bypass()
 
-function test_commas()
-    println( "\ntest commas..." )
+@testset "test commas..." begin
     @test cfmt( "%'d", 1000 ) == "1,000"
     @test cfmt( "%'d", -1000 ) == "-1,000"
     @test cfmt( "%'d", 100 ) == "100"
@@ -101,8 +101,7 @@ function test_commas()
     @test cfmt( "%'s", 1234567.0 ) == "1.234567e6"
 end
 
-function test_format()
-    println( "test format...")
+@testset "test format..." begin
     @test format( 10 ) == "10"
     @test format( 10.0 ) == "10"
     @test format( 10.0, precision=2 ) == "10.00"
@@ -116,16 +115,18 @@ function test_format()
 
     @test format( 1.0, conversion="e", stripzeros=true ) == "1e+00"
     @test format( 1.0, conversion="e", precision=4 ) == "1.0000e+00"
+end
 
-    # hex output
+@testset "hex output" begin
     @test format( 1118, conversion="x" ) == "45e"
     @test format( 1118, width=4, conversion="x" ) == " 45e"
     @test format( 1118, width=4, zeropadding=true, conversion="x" ) == "045e"
     @test format( 1118, alternative=true, conversion="x" ) == "0x45e"
     @test format( 1118, width=4, alternative=true, conversion="x" ) == "0x45e"
     @test format( 1118, width=6, alternative=true, conversion="x", zeropadding=true ) == "0x045e"
+end
 
-    # mixed fractions
+@testset "mixed fractions" begin
     @test format( 3//2, mixedfraction=true ) == "1_1/2"
     @test format( -3//2, mixedfraction=true ) == "-1_1/2"
     @test format( 3//100, mixedfraction=true ) == "3/100"
@@ -139,8 +140,9 @@ function test_format()
     @test format( -302//100, mixedfraction=true,tryden = 100 ) == "-3_2/100"
     @test format( -302//30, mixedfraction=true,tryden = 100 ) == "-10_1/15" # lose precision otherwise
     @test format( -302//100, mixedfraction=true,tryden = 100,fractionwidth=6 ) == "-3_02/100" # lose precision otherwise
+end
 
-    #commas
+@testset "commas" begin
     @test format( 12345678, width=10, commas=true ) == "12,345,678"
     # it would try to squeeze out the commas
     @test format( 12345678, width=9, commas=true ) == "12345,678"
@@ -179,5 +181,3 @@ function test_format()
     @test format( 100, precision=2, suffix="%", conversion="f" ) == "100.00%"
 end
 
-test_commas()
-test_format()

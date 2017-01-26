@@ -32,7 +32,7 @@ function make_argspec(s::AbstractString, pos::Int)
         else
             iarg = ifil > 1 ? parse(Int,s[1:ifil-1]) : -1
             hasfil = true
-            ff = eval(symbol(s[ifil+2:end]))
+            ff = eval(Symbol(s[ifil+2:end]))
         end
     end
 
@@ -100,7 +100,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
         pre = replace(pre, "{{", '{')
         pre = replace(pre, "}}", '}')
     end
-    return (p, utf8(pre))
+    return (p, String(pre))
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
@@ -115,8 +115,8 @@ function FormatExpr(s::AbstractString)
     slen = length(s)
     
     # init
-    prefix = utf8("")
-    suffix = utf8("")
+    prefix = ""
+    suffix = ""
     entries = FormatEntry[]
     inter = UTF8Str[]
 
@@ -166,3 +166,4 @@ printfmt(fe::StringOrFE, args...) = printfmt(STDOUT, fe, args...)
 printfmtln(io::IO, fe::StringOrFE, args...) = (printfmt(io, fe, args...); println(io))
 printfmtln(fe::StringOrFE, args...) = printfmtln(STDOUT, fe, args...)
 
+format(fe::StringOrFE, args...) = sprint(printfmt, fe, args...)

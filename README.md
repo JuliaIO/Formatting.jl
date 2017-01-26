@@ -3,9 +3,10 @@
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
 
 [![Build Status](https://travis-ci.org/JuliaString/Format.jl.svg?branch=newmaster)](https://travis-ci.org/JuliaString/Format.jl)
-[![Format](http://pkg.julialang.org/badges/Format_0.4.svg)](http://pkg.julialang.org/?pkg=Format&ver=0.4)
-[![Format](http://pkg.julialang.org/badges/Format_0.5.svg)](http://pkg.julialang.org/?pkg=Format&ver=0.5)
 
+[![Coverage Status](https://coveralls.io/repos/JuliaString/Format.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaString/Format.jl?branch=master)
+
+[![codecov.io](http://codecov.io/github/JuliaString/Format.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaString/Format.jl?branch=master)
 ---------------
 
 
@@ -25,7 +26,7 @@ To start using the package, you can simply write
 using Format
 ```
 
-This package depends on Julia of version 0.4 or above. It has no other dependencies. The package is MIT-licensed.
+This package depends on Julia of version 0.5 or above. It has no other dependencies. The package is MIT-licensed.
 
 
 ## Python-style Types and Functions
@@ -100,9 +101,9 @@ One can use ``printfmt`` and ``printfmtln`` for formatted printing:
 
 #### Formatted String
 
-One can use ``fmt`` to format a single value into a string, or ``format`` to format one to multiple arguments into a string using an format expression.
+One can use ``pyfmt`` to format a single value into a string, or ``format`` to format one to multiple arguments into a string using an format expression.
 
-- **fmt**(fspec, a)
+- **pyfmt**(fspec, a)
 
     Format a single value using a format specification given by ``fspec``, where ``fspec`` can be either a string or an instance of ``FormatSpec``.
 
@@ -147,7 +148,7 @@ Usage
 using Format
 
 fmt = "%10.3f"
-s = sprintf1( fmt, 3.14159 ) # usage 1. Quite performant. Easiest to switch to.
+s = cfmt( fmt, 3.14159 ) # usage 1. Quite performant. Easiest to switch to.
 
 fmtrfunc = generate_formatter( fmt ) # usage 2. This bypass repeated lookup of cached function. Most performant.
 s = fmtrfunc( 3.14159 )
@@ -156,7 +157,7 @@ s = format( 3.14159, precision=3 ) # usage 3. Most flexible, with some non-print
 ```
 ### Speed
 
-`sprintf1`: Speed penalty is about 20% for floating point and 30% for integers.
+`cfmt`: Speed penalty is about 20% for floating point and 30% for integers.
 
 If the formatter is stored and used instead (see the example using `generate_formatter` above),
 the speed penalty reduces to 10% for floating point and 15% for integers.

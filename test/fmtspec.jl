@@ -94,6 +94,7 @@ end
     @test pyfmt("06d", -123) == "-00123"
     @test pyfmt("<6d", -123) == "-123  "
     @test pyfmt(">6d", -123) == "  -123"
+end
 
 @testset "Format floating point (f)" begin
 
