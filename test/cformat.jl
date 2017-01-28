@@ -8,11 +8,13 @@ _erfinv(z) = sqrt(π) * Base.Math.@horner(z, 0, 1, 0, π/12, 0, 7π^2/480, 0, 12
 function test_equality()
     println( "test cformat equality...")
     srand(10)
-    fmts = Compat.ASCIIString[ "%10.4f", "%f", "%e", "%10f", "%.3f", "%.3e" ]
-    for fmt in fmts
-        l = :( x-> x )
-        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
-        mfmtr = eval( l )
+    fmts = [ (x->@sprintf("%10.4f",x), "%10.4f"),
+             (x->@sprintf("%f", x),    "%f"),
+             (x->@sprintf("%e", x),    "%e"),
+             (x->@sprintf("%10f", x),  "%10f"),
+             (x->@sprintf("%.3f", x),  "%.3f"),
+             (x->@sprintf("%.3e", x),  "%.3e")]
+    for (mfmtr,fmt) in fmts
         for i in 1:10000
             n = _erfinv( rand() * 1.99 - 1.99/2.0 )
             expect = mfmtr( n )
@@ -21,11 +23,11 @@ function test_equality()
         end
     end
 
-    fmts = Compat.ASCIIString[ "%d", "%10d", "%010d", "%-10d" ]
-    for fmt in fmts
-        l = :( x-> x )
-        l.args[2].args[2] = @compat Expr(:macrocall, Symbol("@sprintf"), fmt, :x)
-        mfmtr = eval( l )
+    fmts = [ (x->@sprintf("%d",x),    "%d"),
+             (x->@sprintf("%10d",x),  "%10d"),
+             (x->@sprintf("%010d",x), "%010d"),
+             (x->@sprintf("%-10d",x), "%-10d")]
+    for (mfmtr,fmt) in fmts
         for i in 1:10000
             j = round(Int, _erfinv( rand() * 1.99 - 1.99/2.0 ) * 100000 )
             expect = mfmtr( j )

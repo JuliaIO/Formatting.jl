@@ -1,16 +1,80 @@
 formatters = Dict{ Compat.ASCIIString, Function }()
 
-function sprintf1( fmt::Compat.ASCIIString, x )
-    global formatters
-    f = generate_formatter( fmt )
-    f( x )
+@static if VERSION >= v"0.6-"
+
+sprintf1( fmt::Compat.ASCIIString, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
+
+function checkfmt(fmt)
+    test = Base.Printf.parse( fmt )
+    (length( test ) == 1 && typeof( test[1] ) <: Tuple) ||
+        error( "Only one AND undecorated format string is allowed")
 end
+
+function generate_formatter( fmt::Compat.ASCIIString )
+    global formatters
+
+    haskey( formatters, fmt ) && return formatters[fmt]
+
+    if !contains( fmt, "'" )
+        checkfmt(fmt)
+        return (formatters[ fmt ] = @eval(x->@sprintf( $fmt, x )))
+    end
+
+    conversion = fmt[end]
+    conversion in "sduifF" ||
+        error( string("thousand separator not defined for ", conversion, " conversion") )
+
+    fmtactual = replace( fmt, "'", "", 1 )
+    checkfmt( fmtactual )
+    conversion in "sfF" ||
+        return (formatters[ fmt ] = @eval(x->checkcommas(@sprintf( $fmtactual, x ))))
+
+    formatters[ fmt ] =
+        if endswith( fmtactual, 's')
+            @eval((x::Real)->((eltype(x) <: Rational)
+                              ? addcommasrat(@sprintf( $fmtactual, x ))
+                              : addcommasreal(@sprintf( $fmtactual, x ))))
+        else
+            @eval((x::Real)->addcommasreal(@sprintf( $fmtactual, x )))
+        end
+end
+
+function addcommasreal(s)
+    dpos = findfirst( s, '.' )
+    dpos != 0 && return string(addcommas( s[1:dpos-1] ), s[ dpos:end ])
+    # find the rightmost digit
+    for i in length( s ):-1:1
+        isdigit( s[i] ) && return string(addcommas( s[1:i] ), s[i+1:end])
+    end
+    s
+end
+
+function addcommasrat(s)
+    # commas are added to only the numerator
+    spos = findfirst( s, '/' )
+    string(addcommas( s[1:spos-1] ), s[spos:end])
+end
+
+function checkcommas(s)
+    for i in length( s ):-1:1
+        if isdigit( s[i] )
+            s = string(addcommas( s[1:i] ), s[i+1:end])
+            break
+        end
+    end
+    s
+end
+
+else
+
+sprintf1( fmt::Compat.ASCIIString, x ) = (generate_formatter( fmt ))(x)
 
 function generate_formatter( fmt::Compat.ASCIIString )
     global formatters
     if haskey( formatters, fmt )
         return formatters[fmt]
     end
+
     func = @compat Symbol("sprintf_", replace(base64encode(fmt), "=", "!"))
 
     if !contains( fmt, "'" )
@@ -76,6 +140,7 @@ function generate_formatter( fmt::Compat.ASCIIString )
     f = eval( code )
     formatters[ fmt ] = f
     f
+end
 end
 
 function addcommas( s::Compat.ASCIIString )
