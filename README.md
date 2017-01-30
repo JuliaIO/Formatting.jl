@@ -4,9 +4,9 @@ This package offers Python-style general formatting and c-style numerical format
 
 [![Build Status](https://travis-ci.org/JuliaString/Format.jl.svg?branch=newmaster)](https://travis-ci.org/JuliaString/Format.jl)
 
-[![Coverage Status](https://coveralls.io/repos/JuliaString/Format.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaString/Format.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaString/Format.jl/badge.svg?branch=newmaster)](https://coveralls.io/github/JuliaString/Format.jl?branch=newmaster)
 
-[![codecov.io](http://codecov.io/github/JuliaString/Format.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaString/Format.jl?branch=master)
+[![codecov.io](http://codecov.io/github/JuliaString/Format.jl/coverage.svg?branch=newmaster)](http://codecov.io/github/JuliaString/Format.jl?branch=newmaster)
 ---------------
 
 
