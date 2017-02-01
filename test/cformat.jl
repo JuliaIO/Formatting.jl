@@ -115,6 +115,10 @@ end
 
     @test format( 1.0, conversion="e", stripzeros=true ) == "1e+00"
     @test format( 1.0, conversion="e", precision=4 ) == "1.0000e+00"
+    @test format( 1.0, signed=true ) == "+1"
+    @test format( 1.0, positivespace=true ) == " 1"
+    @test_throws ErrorException format( 1234.56, signed=true, commas=true )
+    @test format( 1.0, width=6, precision=4, stripzeros=true, leftjustified=true) == "1     "
 end
 
 @testset "hex output" begin

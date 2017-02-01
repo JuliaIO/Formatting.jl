@@ -3,6 +3,11 @@
 using Format
 using Base.Test
 
+@static if VERSION <= v"0.6-"
+    ts(io) = takebuf_string(io)
+else
+    ts(io) = String(take!(io))
+end
 
 # default spec
 @testset "Default spec" begin
@@ -16,6 +21,18 @@ using Base.Test
     @test fs.ipre == false
     @test fs.zpad == false
     @test fs.tsep == false
+end
+
+@testset "Show" begin
+    x = FormatSpec("#8,d")
+    io = IOBuffer()
+    show(io, x)
+    str = ts(io)
+    @test contains(str, "width = 8") 
+end
+
+@testset "Literal incorrect" begin
+    @test_throws ErrorException FormatSpec("Z")
 end
 
 # more cases
