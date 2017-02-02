@@ -55,6 +55,12 @@ end
     @test FormatSpec("#8,d") == FormatSpec('d'; width=8, ipre=true, tsep=true)
 end
 
+@testset "Format prefix" begin
+    @test pyfmt("#b", 6) == "0b110"
+    @test pyfmt("#o", 6) == "0o6"
+    @test pyfmt("#x", 6) == "0x6"
+end
+
 @testset "Format string" begin
     @test pyfmt("", "abc") == "abc"
     @test pyfmt("s", "abc") == "abc"

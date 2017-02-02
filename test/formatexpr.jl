@@ -24,6 +24,16 @@ using Base.Test
     @test format("{:03d} + {:04d}", 10, 20) == "010 + 0020"
     @test_throws(ErrorException, format("{1} + {}", 10, 20) )
     @test_throws(ErrorException, format("{} + {1}", 10, 20) )
+    @test_throws(ErrorException, format("{1", 10) )
+
+    f = FormatExpr("{1:s}")
+    printfmt(f,"")
+    printfmtln(f,"")
+    io = IOBuffer()
+    printfmt(io,f,"foobar")
+    @test io.size == 6
+    printfmtln(io,f,"ugly")
+    @test io.size == 11
 end
 
 @testset "format escape {{ and }}" begin

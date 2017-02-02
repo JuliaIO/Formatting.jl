@@ -255,17 +255,6 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
     end
 end
 
-
-function _pfmt_g(out::IO, fs::FormatSpec, x::AbstractFloat)
-    # number decomposition
-    ax = abs(x)
-    if 1.0e-4 <= ax < 1.0e6
-        _pfmt_f(out, fs, x)
-    else
-        _pfmt_e(out, fs, x)
-    end
-end
-
 function _pfmt_specialf(out::IO, fs::FormatSpec, x::AbstractFloat)
     if isinf(x) 
         if x > 0
