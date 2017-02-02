@@ -16,6 +16,7 @@ x = 1234.56789
 @test fmt(x,:commas) == "1,234.567890"
 @test fmt(x,10,3,:left,:commas) == "1,234.568 "
 @test fmt(x,:ipre) == "1234.567890"
+@test fmt(x,12) == " 1234.567890"
 
 i = 1234567
 
@@ -23,6 +24,7 @@ i = 1234567
 @test fmt(i,:commas) == "1,234,567"
 
 @test_throws ErrorException fmt_default(Real)
+@test_throws ErrorException fmt_default(Complex)
 
 fmt_default!(Int, :commas, width = 12)
 @test fmt(i) == "   1,234,567"
@@ -41,3 +43,4 @@ fmt_default!(UInt16, 'd', :commas)
 @test fmt(0xffff) == "65,535"
 fmt_default!(UInt32, UInt16, width=20)
 @test fmt(0xfffff) == "           1,048,575"
+
