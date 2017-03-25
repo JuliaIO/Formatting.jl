@@ -47,7 +47,7 @@ function make_argspec(s::AbstractString, pos::Int)
         else
             pos = -1
         end
-    end 
+    end
 
     return (ArgSpec(iarg, hasfil, ff), pos)
 end
@@ -113,7 +113,7 @@ end
 
 function FormatExpr(s::AbstractString)
     slen = length(s)
-    
+
     # init
     prefix = ""
     suffix = ""
@@ -159,7 +159,7 @@ function printfmt(io::IO, fe::FormatExpr, args...)
     end
 end
 
-typealias StringOrFE Union{AbstractString,FormatExpr}
+const StringOrFE = Union{AbstractString, FormatExpr}
 printfmt(io::IO, fe::AbstractString, args...) = printfmt(io, FormatExpr(fe), args...)
 printfmt(fe::StringOrFE, args...) = printfmt(STDOUT, fe, args...)
 

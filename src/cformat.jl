@@ -11,7 +11,7 @@ function checkfmt(fmt)
     (length( test ) == 1 && typeof( test[1] ) <: Tuple) ||
         error( "Only one AND undecorated format string is allowed")
 end
-    
+
 function generate_formatter( fmt::ASCIIStr )
     global formatters
 
@@ -94,7 +94,7 @@ function generate_format_string(;
         alternative::Bool=false,
         conversion::ASCIIStr="f" #aAdecEfFiosxX
     )
-    
+
     s = ['%'%UInt8]
     commas &&
         push!(s, '\'')

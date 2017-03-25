@@ -80,7 +80,7 @@ function _pfmt_int{Op}(out::IO, sch::Char, ip::ASCIIStr, zs::Integer, ax::Intege
 end
 
 function _pfmt_intdigits{Op,T<:Integer}(out::IO, ax::T, op::Op)
-    b_lb = _div(ax, op)   
+    b_lb = _div(ax, op)
     b = one(T)
     while b <= b_lb
         b = _mul(b, op)
@@ -234,7 +234,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
     xlen = 6 + fs.prec
     if sch != '\0'
         xlen += 1
-    end 
+    end
 
     # print
     ec = isupper(fs.typ) ? 'E' : 'e'
@@ -256,7 +256,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
 end
 
 function _pfmt_specialf(out::IO, fs::FormatSpec, x::AbstractFloat)
-    if isinf(x) 
+    if isinf(x)
         if x > 0
             _pfmt_s(out, fs, "Inf")
         else
