@@ -1,5 +1,11 @@
 formatters = Dict{ Compat.ASCIIString, Function }()
 
+if VERSION >= v"0.5.0"
+    sprintf1( fmt::Compat.ASCIIString, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
+else
+    sprintf1( fmt::Compat.ASCIIString, x ) = (generate_formatter( fmt ))(x)
+end
+
 function sprintf1( fmt::Compat.ASCIIString, x )
     global formatters
     f = generate_formatter( fmt )
