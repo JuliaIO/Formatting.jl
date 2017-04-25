@@ -1,6 +1,6 @@
 formatters = Dict{ Compat.ASCIIString, Function }()
 
-@static if VERSION >= v"0.6-"
+@static if VERSION >= v"0.6.0-dev.1671"
 
 sprintf1( fmt::Compat.ASCIIString, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
 
