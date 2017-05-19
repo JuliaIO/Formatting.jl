@@ -1,8 +1,6 @@
-formatters = Dict{ Compat.ASCIIString, Function }()
+formatters = Dict{ String, Function }()
 
-if VERSION >= v"0.6.0-dev.1671"
-
-sprintf1( fmt::Compat.ASCIIString, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
+sprintf1( fmt::String, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
 
 function checkfmt(fmt)
     test = Base.Printf.parse( fmt )
@@ -10,7 +8,7 @@ function checkfmt(fmt)
         error( "Only one AND undecorated format string is allowed")
 end
 
-function generate_formatter( fmt::Compat.ASCIIString )
+function generate_formatter( fmt::String )
     global formatters
 
     haskey( formatters, fmt ) && return formatters[fmt]
@@ -65,85 +63,8 @@ function checkcommas(s)
     s
 end
 
-else
 
-sprintf1( fmt::Compat.ASCIIString, x ) = (generate_formatter( fmt ))(x)
-
-function generate_formatter( fmt::Compat.ASCIIString )
-    global formatters
-    if haskey( formatters, fmt )
-        return formatters[fmt]
-    end
-
-    func = @compat Symbol("sprintf_", replace(base64encode(fmt), "=", "!"))
-
-    if !contains( fmt, "'" )
-        test = Base.Printf.parse( fmt )
-        if length( test ) != 1 || !( typeof( test[1] ) <: Tuple )
-            error( "Only one AND undecorated format string is allowed")
-        end
-
-        code = quote
-            function $func( x )
-                @sprintf( $fmt, x )
-            end
-        end
-    else
-        conversion = fmt[end]
-        if !in( conversion, "sduifF" )
-            error( "thousand separator not defined for " * string( conversion ) * " conversion")
-        end
-        fmtactual = replace( fmt, "'", "", 1 )
-        test = Base.Printf.parse( fmtactual )
-        if length( test ) != 1 || !( typeof( test[1] ) <: Tuple )
-            error( "Only one AND undecorated format string is allowed")
-        end
-        if in( conversion, "sfF" )
-            code = quote
-                function $func{T<:Real}( x::T )
-                    s = @sprintf( $fmtactual, x )
-                    # commas are added to only the numerator
-                    if T <: Rational && endswith( $fmtactual, "s" )
-                        spos = findfirst( s, '/' )
-                        s = addcommas( s[1:spos-1] ) * s[spos:end]
-                    else
-                        dpos = findfirst( s, '.' )
-                        if dpos != 0
-                            s = addcommas( s[1:dpos-1] ) * s[ dpos:end ]
-                        else # find the rightmost digit
-                            for i in length( s ):-1:1
-                                if isdigit( s[i] )
-                                    s = addcommas( s[1:i] ) * s[i+1:end]
-                                    break
-                                end
-                            end
-                        end
-                    end
-                    s
-                end
-            end
-        else
-            code = quote
-                function $func( x )
-                    s = @sprintf( $fmtactual, x )
-                    for i in length( s ):-1:1
-                        if isdigit( s[i] )
-                            s = addcommas( s[1:i] ) * s[i+1:end]
-                            break
-                        end
-                    end
-                    s
-                end
-            end
-        end
-    end
-    f = eval( code )
-    formatters[ fmt ] = f
-    f
-end
-end
-
-function addcommas( s::Compat.ASCIIString )
+function addcommas( s::String )
     len = length(s)
     t = ""
     for i in 1:3:len
@@ -170,7 +91,7 @@ function generate_format_string(;
         signed::Bool=false,
         positivespace::Bool=false,
         alternative::Bool=false,
-        conversion::Compat.ASCIIString="f" #aAdecEfFiosxX
+        conversion::String="f" #aAdecEfFiosxX
         )
     s = "%"
     if commas
@@ -220,7 +141,7 @@ function format{T<:Real}( x::T;
         tryden::Int = 0, # if 2 or higher, try to use this denominator, without losing precision
         suffix::AbstractString="", # useful for units/%
         autoscale::Symbol=:none, # :metric, :binary or :finance
-        conversion::Compat.ASCIIString=""
+        conversion::String=""
         )
     checkwidth = commas
     if conversion == ""

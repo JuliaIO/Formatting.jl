@@ -32,7 +32,7 @@ function make_argspec(s::AbstractString, pos::Int)
         else
             iarg = ifil > 1 ? parse(Int,s[1:ifil-1]) : -1
             hasfil = true
-            ff = eval(@compat Symbol(s[ifil+2:end]))
+            ff = eval(Symbol(s[ifil+2:end]))
         end
     end
 
@@ -78,10 +78,10 @@ end
 ### Format expression
 
 type FormatExpr
-    prefix::Compat.UTF8String
-    suffix::Compat.UTF8String
+    prefix::String
+    suffix::String
     entries::Vector{FormatEntry}
-    inter::Vector{Compat.UTF8String}
+    inter::Vector{String}
 end
 
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
@@ -100,7 +100,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
         pre = replace(pre, "{{", '{')
         pre = replace(pre, "}}", '}')
     end
-    return (p, convert(Compat.UTF8String, pre))
+    return (p, convert(String, pre))
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
@@ -115,10 +115,10 @@ function FormatExpr(s::AbstractString)
     slen = length(s)
 
     # init
-    prefix = convert(Compat.UTF8String, "")
-    suffix = convert(Compat.UTF8String, "")
+    prefix = ""
+    suffix = ""
     entries = FormatEntry[]
-    inter = Compat.UTF8String[]
+    inter = String[]
 
     # scan
     (p, prefix) = find_next_entry_open(s, 1)
@@ -160,10 +160,10 @@ function printfmt(io::IO, fe::FormatExpr, args...)
 end
 
 printfmt(io::IO, fe::AbstractString, args...) = printfmt(io, FormatExpr(fe), args...)
-@compat printfmt(fe::Union{AbstractString,FormatExpr}, args...) = printfmt(STDOUT, fe, args...)
+printfmt(fe::Union{AbstractString,FormatExpr}, args...) = printfmt(STDOUT, fe, args...)
 
-@compat printfmtln(io::IO, fe::Union{AbstractString,FormatExpr}, args...) = (printfmt(io, fe, args...); println(io))
-@compat printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(STDOUT, fe, args...)
+printfmtln(io::IO, fe::Union{AbstractString,FormatExpr}, args...) = (printfmt(io, fe, args...); println(io))
+printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(STDOUT, fe, args...)
 
-@compat format(fe::Union{AbstractString,FormatExpr}, args...) =
+format(fe::Union{AbstractString,FormatExpr}, args...) =
     sprint(printfmt, fe, args...)

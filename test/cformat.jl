@@ -1,5 +1,4 @@
 using Formatting
-using Compat
 using Base.Test
 
 _erfinv(z) = sqrt(π) * Base.Math.@horner(z, 0, 1, 0, π/12, 0, 7π^2/480, 0, 127π^3/40320, 0,
