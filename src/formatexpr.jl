@@ -30,7 +30,7 @@ function make_argspec(s::AbstractString, pos::Int)
         if ifil == 0
             iarg = parse(Int,s)
         else
-            iarg = ifil > 1 ? parse(Int,s[1:ifil-1]) : -1
+            iarg = ifil > 1 ? parse(Int,s[1:prevind(s, ifil)]) : -1
             hasfil = true
             ff = eval(Symbol(s[ifil+2:end]))
         end
@@ -62,14 +62,14 @@ end
 
 function make_formatentry(s::AbstractString, pos::Int)
     @assert s[1] == '{' && s[end] == '}'
-    sc = s[2:end-1]
+    sc = s[2:prevind(s, endof(s))]
     icolon = search(sc, ':')
     if icolon == 0  # no colon
         (argspec, pos) = make_argspec(sc, pos)
         spec = FormatSpec('s')
     else
-        (argspec, pos) = make_argspec(sc[1:icolon-1], pos)
-        spec = FormatSpec(sc[icolon+1:end])
+        (argspec, pos) = make_argspec(sc[1:prevind(sc, icolon)], pos)
+        spec = FormatSpec(sc[nextind(sc, icolon):end])
     end
     return (FormatEntry(argspec, spec), pos)
 end
@@ -87,7 +87,7 @@ end
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
 function find_next_entry_open(s::AbstractString, si::Int)
-    slen = length(s)
+    slen = sizeof(s)
     p = search(s, '{', si)
     p < slen || _raise_unmatched_lbrace()
     while p > 0 && s[p+1] == '{'  # escape `{{`
@@ -95,7 +95,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
         p < slen || _raise_unmatched_lbrace()
     end
     # println("open at $p")
-    pre = p > 0 ? s[si:p-1] : s[si:end]
+    pre = p > 0 ? s[si:prevind(s, p)] : s[si:end]
     if !isempty(pre)
         pre = replace(pre, "{{", '{')
         pre = replace(pre, "}}", '}')
@@ -104,7 +104,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    slen = length(s)
+    slen = sizeof(s)
     p = search(s, '}', si)
     p > 0 || _raise_unmatched_lbrace()
     # println("close at $p")
@@ -112,7 +112,7 @@ function find_next_entry_close(s::AbstractString, si::Int)
 end
 
 function FormatExpr(s::AbstractString)
-    slen = length(s)
+    slen = sizeof(s)
 
     # init
     prefix = ""
