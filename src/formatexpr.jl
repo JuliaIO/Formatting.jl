@@ -87,7 +87,7 @@ end
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
 function find_next_entry_open(s::AbstractString, si::Int)
-    slen = sizeof(s)
+    slen = endof(s)
     p = search(s, '{', si)
     p < slen || _raise_unmatched_lbrace()
     while p > 0 && s[p+1] == '{'  # escape `{{`
@@ -104,7 +104,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    slen = sizeof(s)
+    slen = endof(s)
     p = search(s, '}', si)
     p > 0 || _raise_unmatched_lbrace()
     # println("close at $p")
@@ -112,7 +112,7 @@ function find_next_entry_close(s::AbstractString, si::Int)
 end
 
 function FormatExpr(s::AbstractString)
-    slen = sizeof(s)
+    slen = endof(s)
 
     # init
     prefix = ""
