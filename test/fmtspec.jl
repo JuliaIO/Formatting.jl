@@ -123,6 +123,7 @@ fs = FormatSpec("d")
 
 @test fmt(".2f", 0.999) == "1.00"
 @test fmt(".2f", 0.996) == "1.00"
+@test fmt("6.2f", 9.999) == " 10.00"
 # Floating point error can upset this one (i.e. 0.99500000 or 0.994999999)
 @test (fmt(".2f", 0.995) == "1.00" || fmt(".2f", 0.995) == "0.99")
 @test fmt(".2f", 0.994) == "0.99"
