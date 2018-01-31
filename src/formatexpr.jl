@@ -2,7 +2,7 @@
 
 ### Argument specification
 
-immutable ArgSpec
+struct ArgSpec
     argidx::Int
     hasfilter::Bool
     filter::Function
@@ -26,10 +26,11 @@ function make_argspec(s::AbstractString, pos::Int)
     ff::Function = Base.identity
 
     if !isempty(s)
-        ifil = searchindex(s, "|>")
-        if ifil == 0
+        filrange = Compat.findfirst("|>", s)
+        if filrange === nothing
             iarg = parse(Int,s)
         else
+            ifil = first(filrange)
             iarg = ifil > 1 ? parse(Int,s[1:prevind(s, ifil)]) : -1
             hasfil = true
             ff = eval(Symbol(s[ifil+2:end]))
@@ -55,16 +56,16 @@ end
 
 ### Format entry
 
-immutable FormatEntry
+struct FormatEntry
     argspec::ArgSpec
     spec::FormatSpec
 end
 
 function make_formatentry(s::AbstractString, pos::Int)
     @assert s[1] == '{' && s[end] == '}'
-    sc = s[2:prevind(s, endof(s))]
-    icolon = search(sc, ':')
-    if icolon == 0  # no colon
+    sc = s[2:prevind(s, lastindex(s))]
+    icolon = Compat.findfirst(isequal(':'), sc)
+    if icolon === nothing  # no colon
         (argspec, pos) = make_argspec(sc, pos)
         spec = FormatSpec('s')
     else
@@ -77,7 +78,7 @@ end
 
 ### Format expression
 
-type FormatExpr
+mutable struct FormatExpr
     prefix::String
     suffix::String
     entries::Vector{FormatEntry}
@@ -87,25 +88,25 @@ end
 _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
 function find_next_entry_open(s::AbstractString, si::Int)
-    slen = endof(s)
-    p = search(s, '{', si)
-    p < slen || _raise_unmatched_lbrace()
-    while p > 0 && s[p+1] == '{'  # escape `{{`
-        p = search(s, '{', p+2)
-        p < slen || _raise_unmatched_lbrace()
+    slen = lastindex(s)
+    p = Compat.findnext(isequal('{'), s, si)
+    (p === nothing || p < slen) || _raise_unmatched_lbrace()
+    while p !== nothing && s[p+1] == '{'  # escape `{{`
+        p = Compat.findnext(isequal('{'), s, p+2)
+        (p === nothing || p < slen) || _raise_unmatched_lbrace()
     end
     # println("open at $p")
-    pre = p > 0 ? s[si:prevind(s, p)] : s[si:end]
+    pre = p !== nothing ? s[si:p-1] : s[si:end]
     if !isempty(pre)
-        pre = replace(pre, "{{", '{')
-        pre = replace(pre, "}}", '}')
+        pre = replace(pre, "{{" => '{')
+        pre = replace(pre, "}}" => '}')
     end
     return (p, convert(String, pre))
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    p = search(s, '}', si)
-    p > 0 || _raise_unmatched_lbrace()
+    p = Compat.findnext(isequal('}'), s, si)
+    p !== nothing || _raise_unmatched_lbrace()
     # println("close at $p")
     return p
 end
@@ -118,12 +119,12 @@ function FormatExpr(s::AbstractString)
     inter = String[]
     # scan
     (p, prefix) = find_next_entry_open(s, 1)
-    if p > 0
+    if p !== nothing
         q = find_next_entry_close(s, p+1)
         (e, pos) = make_formatentry(s[p:q], 0)
         push!(entries, e)
         (p, pre) = find_next_entry_open(s, q+1)
-        while p > 0
+        while p !== nothing
             push!(inter, pre)
             q = find_next_entry_close(s, p+1)
             (e, pos) = make_formatentry(s[p:q], pos)

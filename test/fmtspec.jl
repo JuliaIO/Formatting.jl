@@ -1,7 +1,7 @@
 # test format spec parsing
 
 using Formatting
-using Base.Test
+using Compat.Test
 
 
 # default spec

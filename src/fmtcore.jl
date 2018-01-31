@@ -67,7 +67,7 @@ _signchar(x::Real, s::Char) = signbit(x) ? '-' :
                                 s == '+' ? '+' :
                                 s == ' ' ? ' ' : '\0'
 
-function _pfmt_int{Op}(out::IO, sch::Char, ip::String, zs::Integer, ax::Integer, op::Op)
+function _pfmt_int(out::IO, sch::Char, ip::String, zs::Integer, ax::Integer, op::Op) where {Op}
     # print sign
     if sch != '\0'
         write(out, sch)
@@ -88,8 +88,8 @@ function _pfmt_int{Op}(out::IO, sch::Char, ip::String, zs::Integer, ax::Integer,
     end
 end
 
-function _pfmt_intdigits{Op,T<:Integer}(out::IO, ax::T, op::Op)
-    b_lb = _div(ax, op)   
+function _pfmt_intdigits(out::IO, ax::T, op::Op) where {Op, T<:Integer}
+    b_lb = _div(ax, op)
     b = one(T)
     while b <= b_lb
         b = _mul(b, op)
@@ -102,7 +102,7 @@ function _pfmt_intdigits{Op,T<:Integer}(out::IO, ax::T, op::Op)
     end
 end
 
-function _pfmt_i{Op}(out::IO, fs::FormatSpec, x::Integer, op::Op)
+function _pfmt_i(out::IO, fs::FormatSpec, x::Integer, op::Op) where {Op}
     # calculate actual length
     ax = abs(x)
     xlen = _ndigits(abs(x), op)
@@ -239,7 +239,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
     end
 
     # print
-    ec = isupper(fs.typ) ? 'E' : 'e'
+    ec = isuppercase(fs.typ) ? 'E' : 'e'
     wid = fs.width
     if wid <= xlen
         _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)

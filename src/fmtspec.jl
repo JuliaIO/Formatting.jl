@@ -26,7 +26,7 @@ _tycls(c::Char) =
     (c == 's') ? 's' :
     error("Invalid type char $(c)")
 
-immutable FormatSpec
+struct FormatSpec
     cls::Char    # category: 'i' | 'f' | 'c' | 's'
     typ::Char
     fill::Char
@@ -158,19 +158,16 @@ end
 
 ## formatted printing using a format spec
 
-type _Dec end
-type _Oct end
-type _Hex end
-type _HEX end
-type _Bin end
+mutable struct _Dec end
+mutable struct _Oct end
+mutable struct _Hex end
+mutable struct _HEX end
+mutable struct _Bin end
 
 _srepr(x) = repr(x)
 _srepr(x::AbstractString) = x
 _srepr(x::Char) = string(x)
-
-if isdefined(:Enum)
-    _srepr(x::Enum) = string(x)
-end
+_srepr(x::Enum) = string(x)
 
 function printfmt(io::IO, fs::FormatSpec, x)
     cls = fs.cls
