@@ -63,7 +63,7 @@ _digitchar(x::Integer, ::_Oct) = Char('0' + x)
 _digitchar(x::Integer, ::_Hex) = Char(x < 10 ? '0' + x : 'a' + (x - 10))
 _digitchar(x::Integer, ::_HEX) = Char(x < 10 ? '0' + x : 'A' + (x - 10))
 
-_signchar(x::Number, s::Char) = x < 0 ? '-' :
+_signchar(x::Real, s::Char) = signbit(x) ? '-' :
                                 s == '+' ? '+' :
                                 s == ' ' ? ' ' : '\0'
 
