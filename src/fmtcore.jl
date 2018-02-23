@@ -228,9 +228,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         e = 0
         u = zero(x)
     else
-        e = floor(Integer, log10(ax))
-        scale = exp10(-e + fs.prec)
-        rax = round(ax * scale) / scale
+        rax = signif(ax, fs.prec + 1)
         e = floor(Integer, log10(rax))  # exponent
         u = rax / exp10(e)  # significand
     end
