@@ -226,7 +226,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
     else
         rax = signif(ax, fs.prec + 1)
         e = floor(Integer, log10(rax))  # exponent
-        u = rax / exp10(e)  # significand
+        u = rax * exp10(-e)  # significand
     end
 
     # calculate length
