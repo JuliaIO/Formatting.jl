@@ -149,10 +149,6 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
         _repwrite(out, '0', zs)
     end
     idecv = round(Integer, decv * exp10(prec))
-    if idecv == exp10(prec)
-        intv += 1
-        idecv = 0
-    end
     # print integer part
     if intv == 0
         write(out, '0')
@@ -173,10 +169,10 @@ end
 
 function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     # separate sign, integer, and decimal part
-    ax = abs(x)
+    rax = round(abs(x), fs.prec)
     sch = _signchar(x, fs.sign)
-    intv = trunc(Integer, ax)
-    decv = ax - intv
+    intv = trunc(Integer, rax)
+    decv = rax - intv
 
     # calculate length
     xlen = _ndigits(intv, _Dec()) + 1 + fs.prec
