@@ -32,26 +32,40 @@ fs = FormatSpec("d")
 @test FormatSpec(".6f") == FormatSpec('f'; prec=6)
 @test FormatSpec("<8d") == FormatSpec('d'; width=8, align='<')
 @test FormatSpec("#<8d") == FormatSpec('d'; width=8, fill='#', align='<')
+@test FormatSpec("⋆<8d") == FormatSpec('d'; width=8, fill='⋆', align='<')
 @test FormatSpec("#8,d") == FormatSpec('d'; width=8, ipre=true, tsep=true)
 
 # format string
 
 @test fmt("", "abc") == "abc"
+@test fmt("", "αβγ") == "αβγ"
 @test fmt("s", "abc") == "abc"
+@test fmt("s", "αβγ") == "αβγ"
 @test fmt("2s", "abc") == "abc"
+@test fmt("2s", "αβγ") == "αβγ"
 @test fmt("5s", "abc") == "abc  "
+@test fmt("5s", "αβγ") == "αβγ  "
 @test fmt(">5s", "abc") == "  abc"
+@test fmt(">5s", "αβγ") == "  αβγ"
 @test fmt("*>5s", "abc") == "**abc"
+@test fmt("⋆>5s", "αβγ") == "⋆⋆αβγ"
 @test fmt("*<5s", "abc") == "abc**"
+@test fmt("⋆<5s", "αβγ") == "αβγ⋆⋆"
 
 # format char
 
 @test fmt("", 'c') == "c"
+@test fmt("", 'γ') == "γ"
 @test fmt("c", 'c') == "c"
+@test fmt("c", 'γ') == "γ"
 @test fmt("3c", 'c') == "c  "
+@test fmt("3c", 'γ') == "γ  "
 @test fmt(">3c", 'c') == "  c"
+@test fmt(">3c", 'γ') == "  γ"
 @test fmt("*>3c", 'c') == "**c"
+@test fmt("⋆>3c", 'γ') == "⋆⋆γ"
 @test fmt("*<3c", 'c') == "c**"
+@test fmt("⋆<3c", 'γ') == "γ⋆⋆"
 
 # format integer
 
@@ -78,7 +92,9 @@ fs = FormatSpec("d")
 @test fmt("<6d", 123) == "123   "
 @test fmt(">6d", 123) == "   123"
 @test fmt("*<6d", 123) == "123***"
+@test fmt("⋆<6d", 123) == "123⋆⋆⋆"
 @test fmt("*>6d", 123) == "***123"
+@test fmt("⋆>6d", 123) == "⋆⋆⋆123"
 @test fmt("< 6d", 123) == " 123  "
 @test fmt("<+6d", 123) == "+123  "
 @test fmt("> 6d", 123) == "   123"
@@ -117,9 +133,13 @@ fs = FormatSpec("d")
 @test fmt("<08.2f", -8.376) == "-0008.38"
 @test fmt(">08.2f", -8.376) == "-0008.38"
 @test fmt("*<8.2f", 8.376) == "8.38****"
+@test fmt("⋆<8.2f", 8.376) == "8.38⋆⋆⋆⋆"
 @test fmt("*>8.2f", 8.376) == "****8.38"
+@test fmt("⋆>8.2f", 8.376) == "⋆⋆⋆⋆8.38"
 @test fmt("*<8.2f", -8.376) == "-8.38***"
+@test fmt("⋆<8.2f", -8.376) == "-8.38⋆⋆⋆"
 @test fmt("*>8.2f", -8.376) == "***-8.38"
+@test fmt("⋆>8.2f", -8.376) == "⋆⋆⋆-8.38"
 
 @test fmt(".2f", 0.999) == "1.00"
 @test fmt(".2f", 0.996) == "1.00"
@@ -142,7 +162,9 @@ fs = FormatSpec("d")
 @test fmt("<12.2e", 13.89) == "1.39e+01    "
 @test fmt(">12.2e", 13.89) == "    1.39e+01"
 @test fmt("*<12.2e", 13.89) == "1.39e+01****"
+@test fmt("⋆<12.2e", 13.89) == "1.39e+01⋆⋆⋆⋆"
 @test fmt("*>12.2e", 13.89) == "****1.39e+01"
+@test fmt("⋆>12.2e", 13.89) == "⋆⋆⋆⋆1.39e+01"
 @test fmt("012.2e", 13.89) == "00001.39e+01"
 @test fmt("012.2e", -13.89) == "-0001.39e+01"
 @test fmt("+012.2e", 13.89) == "+0001.39e+01"
@@ -175,5 +197,7 @@ fs = FormatSpec("d")
 @test fmt("<5f", Inf) == "Inf  "
 @test fmt(">5f", Inf) == "  Inf"
 @test fmt("*<5f", Inf) == "Inf**"
+@test fmt("⋆<5f", Inf) == "Inf⋆⋆"
 @test fmt("*>5f", Inf) == "**Inf"
+@test fmt("⋆>5f", Inf) == "⋆⋆Inf"
 

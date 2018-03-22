@@ -102,7 +102,7 @@ function FormatSpec(s::AbstractString)
                 _align = a1[1]
             else
                 _fill = a1[1]
-                _align = a1[2]
+                _align = a1[nextind(a1, 1)]
             end
         end
 
