@@ -178,6 +178,14 @@ fs = FormatSpec("d")
 @test fmt(".1e", 0.6) == "6.0e-01"
 @test fmt(".1e", 0.9) == "9.0e-01"
 
+@test fmt("10.2e", 1.2e100) == " 1.20e+100"
+@test fmt("11.2e", BigFloat("1.2e1000")) == " 1.20e+1000"
+@test fmt("11.2e", BigFloat("1.2e-1000")) == " 1.20e-1000"
+@test fmt("9.2e", 9.999e9) == " 1.00e+10"
+@test fmt("10.2e", 9.999e99) == " 1.00e+100"
+@test fmt("11.2e", BigFloat("9.999e999")) == " 1.00e+1000"
+@test fmt("10.2e", -9.999e-100) == " -1.00e-99"
+
 # format special floating point value
 
 @test fmt("f", NaN) == "NaN"

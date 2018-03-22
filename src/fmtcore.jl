@@ -198,17 +198,9 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     end
 end
 
-function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Int, ec::Char)
+function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Integer, ec::Char)
     intv = trunc(Integer,u)
     decv = u - intv
-    if round(Integer, decv * exp10(prec)) == exp10(prec)
-        intv += 1
-        if intv == 10
-            intv = 1
-            e += 1
-        end
-        decv = 0.
-    end
     _pfmt_float(out, sch, zs, intv, decv, prec)
     write(out, ec)
     if e >= 0
@@ -217,9 +209,10 @@ function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::In
         write(out, '-')
         e = -e
     end
-    (e1, e2) = divrem(e, 10)
-    write(out, Char('0' + e1))
-    write(out, Char('0' + e2))
+    if e < 10
+        write(out, '0')
+    end
+    _pfmt_intdigits(out, e, _Dec())
 end
 
 
@@ -231,15 +224,19 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         e = 0
         u = zero(x)
     else
-        e = floor(Integer,log10(ax))  # exponent
-        u = ax / exp10(e)  # significand
+        rax = signif(ax, fs.prec + 1)
+        e = floor(Integer, log10(rax))  # exponent
+        u = rax / exp10(e)  # significand
     end
 
     # calculate length
     xlen = 6 + fs.prec
+    if abs(e) > 99
+        xlen += _ndigits(abs(e), _Dec()) - 2
+    end
     if sch != '\0'
         xlen += 1
-    end 
+    end
 
     # print
     ec = isupper(fs.typ) ? 'E' : 'e'
