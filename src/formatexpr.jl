@@ -104,7 +104,6 @@ function find_next_entry_open(s::AbstractString, si::Int)
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    slen = endof(s)
     p = search(s, '}', si)
     p > 0 || _raise_unmatched_lbrace()
     # println("close at $p")
@@ -112,14 +111,11 @@ function find_next_entry_close(s::AbstractString, si::Int)
 end
 
 function FormatExpr(s::AbstractString)
-    slen = endof(s)
-
     # init
     prefix = ""
     suffix = ""
     entries = FormatEntry[]
     inter = String[]
-
     # scan
     (p, prefix) = find_next_entry_open(s, 1)
     if p > 0
