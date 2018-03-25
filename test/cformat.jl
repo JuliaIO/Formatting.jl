@@ -1,5 +1,7 @@
 using Formatting
-using Base.Test
+using Compat.Test
+using Compat.Printf
+using Compat.Random
 
 _erfinv(z) = sqrt(π) * Base.Math.@horner(z, 0, 1, 0, π/12, 0, 7π^2/480, 0, 127π^3/40320, 0,
                                          4369π^4/5806080, 0, 34807π^5/182476800) / 2

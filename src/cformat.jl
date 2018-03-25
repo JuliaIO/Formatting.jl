@@ -13,7 +13,7 @@ function generate_formatter( fmt::String )
 
     haskey( formatters, fmt ) && return formatters[fmt]
 
-    if !contains( fmt, "'" )
+    if !occursin("'", fmt)
         checkfmt(fmt)
         return (formatters[ fmt ] = @eval(x->@sprintf( $fmt, x )))
     end
@@ -22,7 +22,7 @@ function generate_formatter( fmt::String )
     conversion in "sduifF" ||
         error( string("thousand separator not defined for ", conversion, " conversion") )
 
-    fmtactual = replace( fmt, "'", "", 1 )
+    fmtactual = replace( fmt, "'" => "", count=1 )
     checkfmt( fmtactual )
     conversion in "sfF" ||
         return (formatters[ fmt ] = @eval(x->checkcommas(@sprintf( $fmtactual, x ))))
@@ -38,8 +38,8 @@ function generate_formatter( fmt::String )
 end
 
 function addcommasreal(s)
-    dpos = findfirst( s, '.' )
-    dpos != 0 && return string(addcommas( s[1:dpos-1] ), s[ dpos:end ])
+    dpos = Compat.findfirst( isequal('.'), s )
+    dpos !== nothing && return string(addcommas( s[1:dpos-1] ), s[ dpos:end ])
     # find the rightmost digit
     for i in length( s ):-1:1
         isdigit( s[i] ) && return string(addcommas( s[1:i] ), s[i+1:end])
@@ -49,7 +49,7 @@ end
 
 function addcommasrat(s)
     # commas are added to only the numerator
-    spos = findfirst( s, '/' )
+    spos = Compat.findfirst( isequal('/'), s )
     string(addcommas( s[1:spos-1] ), s[spos:end])
 end
 
@@ -123,7 +123,7 @@ function generate_format_string(;
     s * conversion
 end
 
-function format{T<:Real}( x::T;
+function format( x::T;
         width::Int=-1,
         precision::Int= -1,
         leftjustified::Bool=false,
@@ -142,7 +142,7 @@ function format{T<:Real}( x::T;
         suffix::AbstractString="", # useful for units/%
         autoscale::Symbol=:none, # :metric, :binary or :finance
         conversion::String=""
-        )
+        ) where {T<:Real}
     checkwidth = commas
     if conversion == ""
         if T <: AbstractFloat || T <: Rational && precision != -1
@@ -275,18 +275,18 @@ function format{T<:Real}( x::T;
             end
             checkwidth = true
         elseif !mixedfraction
-            s = replace( s, "//", fractionsep )
+            s = replace( s, "//" => fractionsep )
             checkwidth = true
         end
     elseif stripzeros && in( actualconv[1], "fFeEs" )
-        dpos = findfirst( s, '.')
+        dpos = Compat.findfirst( isequal('.'), s )
         if in( actualconv[1], "eEs" )
             if in( actualconv[1], "es" )
-                epos = findfirst( s, 'e' )
+                epos = Compat.findfirst( isequal('e'), s )
             else
-                epos = findfirst( s, 'E' )
+                epos = Compat.findfirst( isequal('E'), s )
             end
-            if epos == 0
+            if epos === nothing
                 rpos = length( s )
             else
                 rpos = epos-1
@@ -330,12 +330,12 @@ function format{T<:Real}( x::T;
 
     if checkwidth && width != -1
         if length(s) > width
-            s = replace( s, " ", "", length(s)-width )
+            s = replace( s, " " => "", count=length(s)-width )
             if length(s) > width && endswith( s, " " )
-                s = reverse( replace( reverse(s), " ", "", length(s)-width ) )
+                s = reverse( replace( reverse(s), " " => "", count=length(s)-width ) )
             end
             if length(s) > width
-                s = replace( s, ",", "", length(s)-width )
+                s = replace( s, "," => "", count=length(s)-width )
             end
         elseif length(s) < width
             if leftjustified

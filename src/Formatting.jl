@@ -3,6 +3,8 @@ __precompile__()
 module Formatting
 
     import Base.show
+    using Compat
+    using Compat.Printf
 
     export
         FormatSpec, FormatExpr,
