@@ -96,7 +96,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
         (p === nothing || p < slen) || _raise_unmatched_lbrace()
     end
     # println("open at $p")
-    pre = p !== nothing ? s[si:p-1] : s[si:end]
+    pre = p !== nothing ? s[si:prevind(s, p)] : s[si:end]
     if !isempty(pre)
         pre = replace(pre, "{{" => '{')
         pre = replace(pre, "}}" => '}')
