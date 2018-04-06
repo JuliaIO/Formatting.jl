@@ -138,7 +138,7 @@ end
 
 function printfmt(io::IO, fe::FormatExpr, args...)
     if !isempty(fe.prefix)
-        write(io, fe.prefix)
+        print(io, fe.prefix)
     end
     ents = fe.entries
     ne = length(ents)
@@ -146,13 +146,13 @@ function printfmt(io::IO, fe::FormatExpr, args...)
         e = ents[1]
         printfmt(io, e.spec, getarg(args, e.argspec))
         for i = 2:ne
-            write(io, fe.inter[i-1])
+            print(io, fe.inter[i-1])
             e = ents[i]
             printfmt(io, e.spec, getarg(args, e.argspec))
         end
     end
     if !isempty(fe.suffix)
-        write(io, fe.suffix)
+        print(io, fe.suffix)
     end
 end
 
