@@ -2,9 +2,11 @@
 
 ### auxiliary functions
 
-function _repwrite(out::IO, c::Char, n::Int)
+### print char n times
+
+function _repprint(out::IO, c::Char, n::Int)
     while n > 0
-        write(out, c)
+        print(out, c)
         n -= 1
     end
 end
@@ -16,15 +18,15 @@ function _pfmt_s(out::IO, fs::FormatSpec, s::Union{AbstractString,Char})
     wid = fs.width
     slen = length(s)
     if wid <= slen
-        write(out, s)
+        print(out, s)
     else
         a = fs.align
         if a == '<'
-            write(out, s)
-            _repwrite(out, fs.fill, wid-slen)
+            print(out, s)
+            _repprint(out, fs.fill, wid-slen)
         else
-            _repwrite(out, fs.fill, wid-slen)
-            write(out, s)
+            _repprint(out, fs.fill, wid-slen)
+            print(out, s)
         end
     end
 end
@@ -70,19 +72,19 @@ _signchar(x::Real, s::Char) = signbit(x) ? '-' :
 function _pfmt_int(out::IO, sch::Char, ip::String, zs::Integer, ax::Integer, op::Op) where {Op}
     # print sign
     if sch != '\0'
-        write(out, sch)
+        print(out, sch)
     end
     # print prefix
     if !isempty(ip)
-        write(out, ip)
+        print(out, ip)
     end
     # print padding zeros
     if zs > 0
-        _repwrite(out, '0', zs)
+        _repprint(out, '0', zs)
     end
     # print actual digits
     if ax == 0
-        write(out, '0')
+        print(out, '0')
     else
         _pfmt_intdigits(out, ax, op)
     end
@@ -97,7 +99,7 @@ function _pfmt_intdigits(out::IO, ax::T, op::Op) where {Op, T<:Integer}
     r = ax
     while b > 0
         (q, r) = divrem(r, b)
-        write(out, _digitchar(q, op))
+        print(out, _digitchar(q, op))
         b = _div(b, op)
     end
 end
@@ -128,9 +130,9 @@ function _pfmt_i(out::IO, fs::FormatSpec, x::Integer, op::Op) where {Op}
         a = fs.align
         if a == '<'
             _pfmt_int(out, sch, ip, 0, ax, op)
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
         else
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
             _pfmt_int(out, sch, ip, 0, ax, op)
         end
     end
@@ -142,26 +144,26 @@ end
 function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, prec::Int)
     # print sign
     if sch != '\0'
-        write(out, sch)
+        print(out, sch)
     end
     # print padding zeros
     if zs > 0
-        _repwrite(out, '0', zs)
+        _repprint(out, '0', zs)
     end
     idecv = round(Integer, decv * exp10(prec))
     # print integer part
     if intv == 0
-        write(out, '0')
+        print(out, '0')
     else
         _pfmt_intdigits(out, intv, _Dec())
     end
     # print decimal point
-    write(out, '.')
+    print(out, '.')
     # print decimal part
     if prec > 0
         nd = _ndigits(idecv, _Dec())
         if nd < prec
-            _repwrite(out, '0', prec - nd)
+            _repprint(out, '0', prec - nd)
         end
         _pfmt_intdigits(out, idecv, _Dec())
     end
@@ -190,9 +192,9 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
         a = fs.align
         if a == '<'
             _pfmt_float(out, sch, 0, intv, decv, fs.prec)
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
         else
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
             _pfmt_float(out, sch, 0, intv, decv, fs.prec)
         end
     end
@@ -202,15 +204,15 @@ function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::In
     intv = trunc(Integer,u)
     decv = u - intv
     _pfmt_float(out, sch, zs, intv, decv, prec)
-    write(out, ec)
+    print(out, ec)
     if e >= 0
-        write(out, '+')
+        print(out, '+')
     else
-        write(out, '-')
+        print(out, '-')
         e = -e
     end
     if e < 10
-        write(out, '0')
+        print(out, '0')
     end
     _pfmt_intdigits(out, e, _Dec())
 end
@@ -249,9 +251,9 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         a = fs.align
         if a == '<'
             _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
         else
-            _repwrite(out, fs.fill, wid-xlen)
+            _repprint(out, fs.fill, wid-xlen)
             _pfmt_floate(out, sch, 0, u, fs.prec, e, ec)
         end
     end
