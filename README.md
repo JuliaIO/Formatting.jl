@@ -2,9 +2,8 @@
 
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
 
-[![Build Status](https://travis-ci.org/JuliaIO/Formatting.jl.svg?branch=master)](https://travis-ci.org/JuliaIO/Formatting.jl)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.4.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.4)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.5.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.5)
+[![Formatting](http://pkg.julialang.org/badges/Formatting_0.6.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.6)
+[![Formatting](http://pkg.julialang.org/badges/Formatting_0.7.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.7)
 
 ---------------
 
