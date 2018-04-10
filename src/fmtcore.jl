@@ -171,7 +171,8 @@ end
 
 function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     # separate sign, integer, and decimal part
-    rax = round(abs(x); digits=fs.prec)
+    rax = (@static VERSION < v"0.7.0-DEV.4804" ? round(abs(x), fs.prec) :
+           round(abs(x); digits=fs.prec))
     sch = _signchar(x, fs.sign)
     intv = trunc(Integer, rax)
     decv = rax - intv
@@ -226,7 +227,8 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         e = 0
         u = zero(x)
     else
-        rax = round(ax; sigdigits = fs.prec + 1)
+        rax = (@static VERSION < v"0.7.0-DEV.4804" ? signif(ax, fs.prec + 1) :
+               round(ax; sigdigits = fs.prec + 1))
         e = floor(Integer, log10(rax))  # exponent
         u = rax * exp10(-e)  # significand
     end
