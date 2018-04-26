@@ -2,9 +2,19 @@
 
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
 
-[![Build Status](https://travis-ci.org/JuliaIO/Formatting.jl.svg?branch=master)](https://travis-ci.org/JuliaIO/Formatting.jl)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.4.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.4)
-[![Formatting](http://pkg.julialang.org/badges/Formatting_0.5.svg)](http://pkg.julialang.org/?pkg=Formatting&ver=0.5)
+| **PackageEvaluator**                                            | **Build Status**                                                                                |
+|:---------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+|[![][pkg-0.6-img]][pkg-0.6-url] | [![][travis-img]][travis-url] [![][codecov-img]][codecov-url] |
+
+
+[travis-img]: https://travis-ci.org/JuliaIO/Formatting.jl.svg?branch=master
+[travis-url]: https://travis-ci.org/JuliaIO/Formatting.jl
+
+[codecov-img]: https://codecov.io/gh/JuliaIO/Formatting.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/JuliaIO/Formatting.jl
+
+[pkg-0.6-img]: http://pkg.julialang.org/badges/Formatting_0.6.svg
+[pkg-0.6-url]: http://pkg.julialang.org/?pkg=Formatting
 
 ---------------
 
