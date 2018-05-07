@@ -4,11 +4,14 @@ This package offers Python-style general formatting and c-style numerical format
 
 | **PackageEvaluator**                                            | **Build Status**                                                                                |
 |:---------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
-|[![][pkg-0.6-img]][pkg-0.6-url] | [![][travis-img]][travis-url] [![][codecov-img]][codecov-url] |
+|[![][pkg-0.6-img]][pkg-0.6-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
 
 
 [travis-img]: https://travis-ci.org/JuliaIO/Formatting.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/JuliaIO/Formatting.jl
+
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/all0t7gefcl5dgv1/branch/master?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/jmkuhn/formatting-jl/branch/master
 
 [codecov-img]: https://codecov.io/gh/JuliaIO/Formatting.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/JuliaIO/Formatting.jl
