@@ -203,6 +203,10 @@ end
 function _pfmt_floate(out::IO, sch::Char, zs::Integer, u::Real, prec::Int, e::Integer, ec::Char)
     intv = trunc(Integer,u)
     decv = u - intv
+    if intv == 0 && decv != 0
+        intv = 1
+        decv -= 1
+    end
     _pfmt_float(out, sch, zs, intv, decv, prec)
     print(out, ec)
     if e >= 0
