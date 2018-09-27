@@ -157,10 +157,10 @@ function printfmt(io::IO, fe::FormatExpr, args...)
 end
 
 printfmt(io::IO, fe::AbstractString, args...) = printfmt(io, FormatExpr(fe), args...)
-printfmt(fe::Union{AbstractString,FormatExpr}, args...) = printfmt(STDOUT, fe, args...)
+printfmt(fe::Union{AbstractString,FormatExpr}, args...) = printfmt(stdout, fe, args...)
 
 printfmtln(io::IO, fe::Union{AbstractString,FormatExpr}, args...) = (printfmt(io, fe, args...); println(io))
-printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(STDOUT, fe, args...)
+printfmtln(fe::Union{AbstractString,FormatExpr}, args...) = printfmtln(stdout, fe, args...)
 
 format(fe::Union{AbstractString,FormatExpr}, args...) =
     sprint(printfmt, fe, args...)

@@ -195,7 +195,7 @@ function printfmt(io::IO, fs::FormatSpec, x)
     end
 end
 
-printfmt(fs::FormatSpec, x) = printfmt(STDOUT, fs, x)
+printfmt(fs::FormatSpec, x) = printfmt(stdout, fs, x)
 
 fmt(fs::FormatSpec, x) = sprint(printfmt, fs, x)
 fmt(spec::AbstractString, x) = fmt(FormatSpec(spec), x)
