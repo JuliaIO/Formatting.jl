@@ -169,18 +169,23 @@ _srepr(x::AbstractString) = x
 _srepr(x::Char) = string(x)
 _srepr(x::Enum) = string(x)
 
+_toint(x) = Integer(x)
+_toint(x::AbstractString) = parse(Int, x)
+_tofloat(x) = float(x)
+_tofloat(x::AbstractString) = parse(Float64, x)
+
 function printfmt(io::IO, fs::FormatSpec, x)
     cls = fs.cls
     ty = fs.typ
     if cls == 'i'
-        ix = Integer(x)
+        ix = _toint(x)
         ty == 'd' || ty == 'n' ? _pfmt_i(io, fs, ix, _Dec()) :
         ty == 'x' ? _pfmt_i(io, fs, ix, _Hex()) :
         ty == 'X' ? _pfmt_i(io, fs, ix, _HEX()) :
         ty == 'o' ? _pfmt_i(io, fs, ix, _Oct()) :
         _pfmt_i(io, fs, ix, _Bin())
     elseif cls == 'f'
-        fx = float(x)
+        fx = _tofloat(x)
         if isfinite(fx)
             ty == 'f' || ty == 'F' ? _pfmt_f(io, fs, fx) :
             ty == 'e' || ty == 'E' ? _pfmt_e(io, fs, fx) :
