@@ -15,7 +15,8 @@ function generate_formatter( fmt::String )
 
     if !occursin("'", fmt)
         checkfmt(fmt)
-        return (formatters[ fmt ] = @eval(x->@sprintf( $fmt, x )))
+        formatter = @eval(x->@sprintf( $fmt, x ))
+        return (formatters[ fmt ] = x->Base.invokelatest(formatter, x))
     end
 
     conversion = fmt[end]
@@ -24,10 +25,12 @@ function generate_formatter( fmt::String )
 
     fmtactual = replace( fmt, "'" => "", count=1 )
     checkfmt( fmtactual )
-    conversion in "sfF" ||
-        return (formatters[ fmt ] = @eval(x->checkcommas(@sprintf( $fmtactual, x ))))
+    if !Compat.occursin(conversion, "sfF")
+        formatter = @eval(x->checkcommas(@sprintf( $fmtactual, x )))
+        return (formatters[ fmt ] = x->Base.invokelatest(formatter, x))
+    end
 
-    formatters[ fmt ] =
+    formatter =
         if endswith( fmtactual, 's')
             @eval((x::Real)->((eltype(x) <: Rational)
                               ? addcommasrat(@sprintf( $fmtactual, x ))
@@ -35,6 +38,7 @@ function generate_formatter( fmt::String )
         else
             @eval((x::Real)->addcommasreal(@sprintf( $fmtactual, x )))
         end
+    return (formatters[ fmt ] = x->Base.invokelatest(formatter, x))
 end
 
 function addcommasreal(s)

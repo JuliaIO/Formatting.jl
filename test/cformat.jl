@@ -191,3 +191,15 @@ end
 
 test_commas()
 test_format()
+
+function test_generate_formatter()
+    fmt = generate_formatter( "%7.2f" )
+    @test fmt( 1.234 ) == "   1.23"
+    @test fmt( π ) == "   3.14"
+    fmt = generate_formatter( "%'10.2f" )
+    @test fmt( 1234.5678 ) == "   1,234.57"    # BUG 1 extra space
+    fmt = generate_formatter( "%'10d" )
+    @test fmt( 1234567 ) == "   1,234,567"    # BUG 2 extra spaces
+end
+
+test_generate_formatter()
