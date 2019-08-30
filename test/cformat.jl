@@ -1,18 +1,14 @@
 using Formatting
-using Compat
-using Compat.Test
-using Compat.Printf
-using Compat.Random
+using Test
+using Printf
+using Random
 
 _erfinv(z) = sqrt(π) * Base.Math.@horner(z, 0, 1, 0, π/12, 0, 7π^2/480, 0, 127π^3/40320, 0,
                                          4369π^4/5806080, 0, 34807π^5/182476800) / 2
-@static if VERSION >= v"0.7.0-beta2.171"
-    const srand = Random.seed!
-end
 
 function test_equality()
     println( "test cformat equality...")
-    Compat.Random.seed!( 10 )
+    Random.seed!( 10 )
     fmts = [ (x->@sprintf("%10.4f",x), "%10.4f"),
              (x->@sprintf("%f", x),    "%f"),
              (x->@sprintf("%e", x),    "%e"),
@@ -72,20 +68,20 @@ println( "integer sprintf speed, bypass repeated lookup")
 @time runtime_int_bypass()
 
 function native_float()
-    Compat.Random.seed!( 10 )
+    Random.seed!( 10 )
     for i in 1:200000
         @sprintf( "%10.4f", _erfinv( rand() ) )
     end
 end
 function runtime_float()
-    Compat.Random.seed!( 10 )
+    Random.seed!( 10 )
     for i in 1:200000
         sprintf1( "%10.4f", _erfinv( rand() ) )
     end
 end
 function runtime_float_bypass()
     f = generate_formatter( "%10.4f" )
-    Compat.Random.seed!( 10 )
+    Random.seed!( 10 )
     for i in 1:200000
         f( _erfinv( rand() ) )
     end

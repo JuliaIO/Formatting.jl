@@ -26,7 +26,7 @@ function make_argspec(s::AbstractString, pos::Int)
     ff::Function = Base.identity
 
     if !isempty(s)
-        filrange = Compat.findfirst("|>", s)
+        filrange = findfirst("|>", s)
         if filrange === nothing
             iarg = parse(Int,s)
         else
@@ -64,7 +64,7 @@ end
 function make_formatentry(s::AbstractString, pos::Int)
     @assert s[1] == '{' && s[end] == '}'
     sc = s[2:prevind(s, lastindex(s))]
-    icolon = Compat.findfirst(isequal(':'), sc)
+    icolon = findfirst(isequal(':'), sc)
     if icolon === nothing  # no colon
         (argspec, pos) = make_argspec(sc, pos)
         spec = FormatSpec('s')
@@ -89,10 +89,10 @@ _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
 function find_next_entry_open(s::AbstractString, si::Int)
     slen = lastindex(s)
-    p = Compat.findnext(isequal('{'), s, si)
+    p = findnext(isequal('{'), s, si)
     (p === nothing || p < slen) || _raise_unmatched_lbrace()
     while p !== nothing && s[p+1] == '{'  # escape `{{`
-        p = Compat.findnext(isequal('{'), s, p+2)
+        p = findnext(isequal('{'), s, p+2)
         (p === nothing || p < slen) || _raise_unmatched_lbrace()
     end
     # println("open at $p")
@@ -105,7 +105,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    p = Compat.findnext(isequal('}'), s, si)
+    p = findnext(isequal('}'), s, si)
     p !== nothing || _raise_unmatched_lbrace()
     # println("close at $p")
     return p

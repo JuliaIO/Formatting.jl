@@ -36,7 +36,7 @@ To start using the package, you can simply write
 using Formatting
 ```
 
-This package depends on Julia of version 0.2 or above. It has no other dependencies. The package is MIT-licensed.
+This package depends on Julia of version 0.7 or above. It has no other dependencies. The package is MIT-licensed.
 
 
 ## Python-style Types and Functions
