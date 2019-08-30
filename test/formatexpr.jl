@@ -1,5 +1,5 @@
 using Formatting
-using Compat.Test
+using Test
 
 # with positional arguments
 

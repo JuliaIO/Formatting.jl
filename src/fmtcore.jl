@@ -171,8 +171,7 @@ end
 
 function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     # separate sign, integer, and decimal part
-    # when https://github.com/JuliaLang/Compat.jl/pull/537 is merged, remove base = 10
-    rax = Compat.round(abs(x), digits = fs.prec, base = 10)
+    rax = round(abs(x), digits = fs.prec)
     sch = _signchar(x, fs.sign)
     intv = trunc(Integer, rax)
     decv = rax - intv
@@ -231,8 +230,7 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         e = 0
         u = zero(x)
     else
-        # when https://github.com/JuliaLang/Compat.jl/pull/537 is merged, remove base = 10
-        rax = Compat.round(ax, sigdigits = fs.prec + 1, base = 10)
+        rax = round(ax, sigdigits = fs.prec + 1)
         e = floor(Integer, log10(rax))  # exponent
         u = rax * exp10(-e)  # significand
     end

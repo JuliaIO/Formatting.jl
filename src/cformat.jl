@@ -25,7 +25,7 @@ function generate_formatter( fmt::String )
 
     fmtactual = replace( fmt, "'" => "", count=1 )
     checkfmt( fmtactual )
-    if !Compat.occursin(conversion, "sfF")
+    if !occursin(conversion, "sfF")
         formatter = @eval(x->checkcommas(@sprintf( $fmtactual, x )))
         return (formatters[ fmt ] = x->Base.invokelatest(formatter, x))
     end
@@ -42,7 +42,7 @@ function generate_formatter( fmt::String )
 end
 
 function addcommasreal(s)
-    dpos = Compat.findfirst( isequal('.'), s )
+    dpos = findfirst( isequal('.'), s )
     dpos !== nothing && return string(addcommas( s[1:dpos-1] ), s[ dpos:end ])
     # find the rightmost digit
     for i in length( s ):-1:1
@@ -53,7 +53,7 @@ end
 
 function addcommasrat(s)
     # commas are added to only the numerator
-    spos = Compat.findfirst( isequal('/'), s )
+    spos = findfirst( isequal('/'), s )
     string(addcommas( s[1:spos-1] ), s[spos:end])
 end
 
@@ -283,12 +283,12 @@ function format( x::T;
             checkwidth = true
         end
     elseif stripzeros && in( actualconv[1], "fFeEs" )
-        dpos = Compat.findfirst( isequal('.'), s )
+        dpos = findfirst( isequal('.'), s )
         if in( actualconv[1], "eEs" )
             if in( actualconv[1], "es" )
-                epos = Compat.findfirst( isequal('e'), s )
+                epos = findfirst( isequal('e'), s )
             else
-                epos = Compat.findfirst( isequal('E'), s )
+                epos = findfirst( isequal('E'), s )
             end
             if epos === nothing
                 rpos = length( s )
