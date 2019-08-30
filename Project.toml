@@ -1,0 +1,10 @@
+name = "Formatting"
+uuid = "59287772-0a20-5a39-b81b-1366585eb4c0"
+version = "0.3.7"
+
+[deps]
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
+
+[compat]
+Compat = "≥ 1.5.0"
+julia = "≥ 0.6.0"
