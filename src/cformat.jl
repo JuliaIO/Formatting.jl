@@ -3,7 +3,7 @@ formatters = Dict{ String, Function }()
 sprintf1( fmt::String, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
 
 function checkfmt(fmt)
-    test = Base.Printf.parse( fmt )
+    test = @static VERSION >= v"1.4.0-DEV.180" ? Printf.parse(fmt) : Base.Printf.parse( fmt )
     (length( test ) == 1 && typeof( test[1] ) <: Tuple) ||
         error( "Only one AND undecorated format string is allowed")
 end
