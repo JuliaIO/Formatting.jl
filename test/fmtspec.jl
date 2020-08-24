@@ -193,6 +193,7 @@ fs = FormatSpec("d")
 
 # issue #84
 @test fmt("+11.3e", 1.0e-309) == "+1.000e-309"
+@test fmt("+11.3e", 1.0e-313) == "+1.000e-313"
 
 # format special floating point value
 
