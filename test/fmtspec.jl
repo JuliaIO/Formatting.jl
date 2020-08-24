@@ -191,6 +191,9 @@ fs = FormatSpec("d")
 @test fmt("11.2e", BigFloat("9.999e999")) == " 1.00e+1000"
 @test fmt("10.2e", -9.999e-100) == " -1.00e-99"
 
+# issue #84
+@test fmt("+11.3e", 1.0e-309) == "+1.000e-309"
+
 # format special floating point value
 
 @test fmt("f", NaN) == "NaN"
