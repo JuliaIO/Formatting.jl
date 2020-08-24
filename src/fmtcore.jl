@@ -233,6 +233,11 @@ function _pfmt_e(out::IO, fs::FormatSpec, x::AbstractFloat)
         rax = round(ax, sigdigits = fs.prec + 1)
         e = floor(Integer, log10(rax))  # exponent
         u = rax * exp10(-e)  # significand
+        i = 1
+        while u == Inf
+            u = 10^i * rax * exp10(-e - i)
+            i += 1
+        end
     end
 
     # calculate length
