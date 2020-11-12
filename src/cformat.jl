@@ -1,6 +1,8 @@
 formatters = Dict{ String, Function }()
 
 sprintf1( fmt::String, x ) = eval(Expr(:call, generate_formatter( fmt ), x))
+printf1( io::IO, fmt::String, x ) = print(io,sprintf1( fmt, x ))
+printf1( fmt::String, x ) = printf1( stdout, fmt, x )
 
 function checkfmt(fmt)
     @static if VERSION > v"1.6.0-DEV.854"

@@ -6,7 +6,7 @@ module Formatting
     export
         FormatSpec, FormatExpr,
         printfmt, printfmtln, fmt, format,
-        sprintf1, generate_formatter
+        sprintf1, printf1, generate_formatter
 
     include("cformat.jl" )
     include("fmtspec.jl")
