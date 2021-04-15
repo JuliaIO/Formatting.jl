@@ -181,7 +181,7 @@ fs = FormatSpec("d")
 @test fmt(".1e", 0.9) == "9.0e-01"
 
 # issue #61
-@test fmt("1.0e", 1e-21) == "1.e-21"
+@test fmt("1.0e", 1e-21) == "1e-21"
 @test fmt("1.1e", 1e-21) == "1.0e-21"
 
 @test fmt("10.2e", 1.2e100) == " 1.20e+100"
