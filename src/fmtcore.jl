@@ -157,10 +157,9 @@ function _pfmt_float(out::IO, sch::Char, zs::Integer, intv::Real, decv::Real, pr
     else
         _pfmt_intdigits(out, intv, _Dec())
     end
-    # print decimal point
-    print(out, '.')
     # print decimal part
     if prec > 0
+        print(out, '.')
         nd = _ndigits(idecv, _Dec())
         if nd < prec
             _repprint(out, '0', prec - nd)
@@ -177,7 +176,7 @@ function _pfmt_f(out::IO, fs::FormatSpec, x::AbstractFloat)
     decv = rax - intv
 
     # calculate length
-    xlen = _ndigits(intv, _Dec()) + 1 + fs.prec
+    xlen = _ndigits(intv, _Dec()) + (fs.prec > 0 ? 1 + fs.prec : 0)
     if sch != '\0'
         xlen += 1
     end
