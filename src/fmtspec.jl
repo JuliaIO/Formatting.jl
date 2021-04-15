@@ -166,6 +166,7 @@ mutable struct _Bin end
 
 _srepr(x) = repr(x)
 _srepr(x::AbstractString) = x
+_srepr(x::Symbol) = string(x)
 _srepr(x::Char) = string(x)
 _srepr(x::Enum) = string(x)
 
