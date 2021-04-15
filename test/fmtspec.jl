@@ -52,6 +52,11 @@ fs = FormatSpec("d")
 @test fmt("*<5s", "abc") == "abc**"
 @test fmt("⋆<5s", "αβγ") == "αβγ⋆⋆"
 
+# format symbol
+
+@test fmt("", :abc) == "abc"
+@test fmt("s", :abc) == "abc"
+
 # format char
 
 @test fmt("", 'c') == "c"
