@@ -146,7 +146,7 @@ function test_format()
     @test format( -302//30, mixedfraction=true,tryden = 100 ) == "-10_1/15" # lose precision otherwise
     @test format( -302//100, mixedfraction=true,tryden = 100,fractionwidth=6 ) == "-3_02/100" # lose precision otherwise
 
-    #commas
+    # commas
     @test format( 12345678, width=10, commas=true ) == "12,345,678"
     # it would try to squeeze out the commas
     @test format( 12345678, width=9, commas=true ) == "12345,678"
@@ -183,6 +183,13 @@ function test_format()
     @test format( 100.00, precision=2, suffix="%" ) == "100.00%"
     @test format( 100, precision=2, suffix="%" ) == "100%"
     @test format( 100, precision=2, suffix="%", conversion="f" ) == "100.00%"
+
+    old_sep = Char(Formatting.THOUSANDS_SEPARATOR[])  # change the default separator ...
+    Formatting.THOUSANDS_SEPARATOR[] = '_'
+    @test format( 12345678, width=10, commas=true ) == "12_345_678"
+    @test format( 12345678, width=9, commas=true ) == "12345_678"
+    Formatting.THOUSANDS_SEPARATOR[] = old_sep  # ... and restore it
+
 end
 
 test_commas()

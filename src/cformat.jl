@@ -83,7 +83,7 @@ function addcommas( s::String )
             t = subs
         else
             if match( r"[0-9]", subs ) != nothing
-                t = subs * "," * t
+                t = subs * THOUSANDS_SEPARATOR[] * t
             else
                 t = subs * t
             end
@@ -345,7 +345,7 @@ function format( x::T;
                 s = reverse( replace( reverse(s), " " => "", count=length(s)-width ) )
             end
             if length(s) > width
-                s = replace( s, "," => "", count=length(s)-width )
+                s = replace( s, THOUSANDS_SEPARATOR[] => "", count=length(s)-width )
             end
         elseif length(s) < width
             if leftjustified

@@ -8,6 +8,8 @@ module Formatting
         printfmt, printfmtln, fmt, format,
         sprintf1, generate_formatter
 
+    const THOUSANDS_SEPARATOR = Ref(',')
+
     include("cformat.jl" )
     include("fmtspec.jl")
     include("fmtcore.jl")
