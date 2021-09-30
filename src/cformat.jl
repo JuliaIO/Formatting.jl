@@ -73,19 +73,20 @@ function checkcommas(s)
     s
 end
 
-
-function addcommas( s::String )
+function addcommas(s::S) where {S <: AbstractString}
     len = length(s)
+    inds = eachindex(s)
+    firstind = firstindex(s)
     t = ""
     for i in 1:3:len
-        subs = s[max(1,len-i-1):len-i+1]
+        substr = SubString(s, max(firstind, prevind(s, len, i + 1)), nextind(s, prevind(s, len, i)))
         if i == 1
-            t = subs
+            t = substr
         else
-            if match( r"[0-9]", subs ) != nothing
-                t = subs * "," * t
+            if any(isdigit, substr)
+                t = substr * "," * t
             else
-                t = subs * t
+                t = substr * t
             end
         end
     end
