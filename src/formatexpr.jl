@@ -28,12 +28,12 @@ function make_argspec(s::AbstractString, pos::Int)
     if !isempty(s)
         filrange = findfirst("|>", s)
         if filrange === nothing
-            iarg = parse(Int,s)
+            iarg = parse(Int, s)
         else
             ifil = first(filrange)
-            iarg = ifil > 1 ? parse(Int,s[1:prevind(s, ifil)]) : -1
+            iarg = ifil > 1 ? parse(Int, SubString(s, 1, prevind(s, ifil))) : -1
             hasfil = true
-            ff = eval(Symbol(s[ifil+2:end]))
+            ff = eval(Symbol(SubString(s, nextind(s, ifil, 2))))
         end
     end
 
@@ -62,15 +62,16 @@ struct FormatEntry
 end
 
 function make_formatentry(s::AbstractString, pos::Int)
-    @assert s[1] == '{' && s[end] == '}'
-    sc = s[2:prevind(s, lastindex(s))]
-    icolon = findfirst(isequal(':'), sc)
+    @assert s[firstindex(s)] == '{' && s[lastindex(s)] == '}'
+    firstind = firstindex(s)
+    sc = SubString(s, nextind(s, firstind), prevind(s, lastindex(s)))
+    icolon = findfirst(':', sc)
     if icolon === nothing  # no colon
         (argspec, pos) = make_argspec(sc, pos)
         spec = FormatSpec('s')
     else
-        (argspec, pos) = make_argspec(sc[1:prevind(sc, icolon)], pos)
-        spec = FormatSpec(sc[nextind(sc, icolon):end])
+        (argspec, pos) = make_argspec(SubString(sc, firstind, prevind(sc, icolon)), pos)
+        spec = FormatSpec(SubString(sc, nextind(sc, icolon)))
     end
     return (FormatEntry(argspec, spec), pos)
 end
@@ -89,14 +90,14 @@ _raise_unmatched_lbrace() = error("Unmatched { in format expression.")
 
 function find_next_entry_open(s::AbstractString, si::Int)
     slen = lastindex(s)
-    p = findnext(isequal('{'), s, si)
+    p = findnext('{', s, si)
     (p === nothing || p < slen) || _raise_unmatched_lbrace()
-    while p !== nothing && s[p+1] == '{'  # escape `{{`
-        p = findnext(isequal('{'), s, p+2)
+    while p !== nothing && s[nextind(s, p)] == '{'  # escape `{{`
+        p = findnext('{', s, nextind(s, p, 2))
         (p === nothing || p < slen) || _raise_unmatched_lbrace()
     end
     # println("open at $p")
-    pre = p !== nothing ? s[si:prevind(s, p)] : s[si:end]
+    pre = p !== nothing ? SubString(s, si, prevind(s, p)) : SubString(s, si)
     if !isempty(pre)
         pre = replace(pre, "{{" => '{')
         pre = replace(pre, "}}" => '}')
@@ -105,7 +106,7 @@ function find_next_entry_open(s::AbstractString, si::Int)
 end
 
 function find_next_entry_close(s::AbstractString, si::Int)
-    p = findnext(isequal('}'), s, si)
+    p = findnext('}', s, si)
     p !== nothing || _raise_unmatched_lbrace()
     # println("close at $p")
     return p

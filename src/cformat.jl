@@ -48,29 +48,30 @@ function generate_formatter( fmt::String )
 end
 
 function addcommasreal(s)
-    dpos = findfirst( isequal('.'), s )
-    dpos !== nothing && return string(addcommas( s[1:dpos-1] ), s[ dpos:end ])
+    dpos = findfirst(==('.'), s)
+    firstind = firstindex(s)
+    dpos !== nothing && return string(addcommas(SubString(s, firstind, prevind(s, dpos))), SubString(s, dpos))
     # find the rightmost digit
-    for i in length( s ):-1:1
-        isdigit( s[i] ) && return string(addcommas( s[1:i] ), s[i+1:end])
+    for i in Iterators.reverse(eachindex(s))
+        isdigit(s[i]) && return string(addcommas(SubString(s, firstind, i)), SubString(s, nextind(s, i)))
     end
-    s
+    return s
 end
 
 function addcommasrat(s)
     # commas are added to only the numerator
-    spos = findfirst( isequal('/'), s )
-    string(addcommas( s[1:spos-1] ), s[spos:end])
+    spos = findfirst('/', s)
+    string(addcommas(SubString(s, firstindex(s), prevind(s, spos))), SubString(s, spos))
 end
 
 function checkcommas(s)
-    for i in length( s ):-1:1
-        if isdigit( s[i] )
-            s = string(addcommas( s[1:i] ), s[i+1:end])
-            break
+    firstind = firstindex(s)
+    for i in Iterators.reverse(eachindex(s))
+        if isdigit(s[i])
+            return string(addcommas(SubString(s, firstind, i)), SubString(s, nextind(s, i)))
         end
     end
-    s
+    return s
 end
 
 function addcommas(s::S) where {S <: AbstractString}
@@ -290,38 +291,43 @@ function format( x::T;
             checkwidth = true
         end
     elseif stripzeros && in( actualconv[1], "fFeEs" )
-        dpos = findfirst( isequal('.'), s )
+        dpos = findfirst('.', s)
         if in( actualconv[1], "eEs" )
             if in( actualconv[1], "es" )
-                epos = findfirst( isequal('e'), s )
+                epos = findfirst('e', s)
             else
-                epos = findfirst( isequal('E'), s )
+                epos = findfirst('E', s)
             end
             if epos === nothing
-                rpos = length( s )
+                rpos = lastindex(s)
             else
-                rpos = epos-1
+                rpos = prevind(s, epos)
             end
         else
             rpos = length(s)
         end
         # rpos at this point is the rightmost possible char to start
         # stripping
-        stripfrom = rpos+1
-        for i = rpos:-1:dpos+1
+        stripfrom = nextind(s, rpos)
+        lower_ind = nextind(s, dpos)
+        # for i = rpos:-1:dpos+1
+        for i in Iterators.reverse(eachindex(s))
+            if i > rpos || i < lower_ind
+                continue
+            end
             if s[i] == '0'
                 stripfrom = i
-            elseif s[i] ==' '
+            elseif s[i] == ' '
                 continue
             else
                 break
             end
         end
         if stripfrom <= rpos
-            if stripfrom == dpos+1 # everything after decimal is 0, so strip the decimal too
+            if stripfrom == nextind(s, dpos) # everything after decimal is 0, so strip the decimal too
                 stripfrom = dpos
             end
-            s = s[1:stripfrom-1] * s[rpos+1:end]
+            s = string(SubString(s, firstindex(s), prevind(s, stripfrom)), SubString(s, nextind(s, rpos)))
             checkwidth = true
         end
     end
