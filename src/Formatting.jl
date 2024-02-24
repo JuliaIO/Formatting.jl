@@ -17,8 +17,8 @@ module Formatting
         it has been deprecated - consider using an alternative, such as
         `Format.jl` (https://github.com/JuliaString/Format.jl) or the `Printf` stdlib directly.
 
-        If your are not using Formatting.jl as a direct dependency, please consider
-        opening an issue on any packages your are using that do use it as a dependency.
+        If you are not using Formatting.jl as a direct dependency, please consider
+        opening an issue on any packages you are using that do use it as a dependency.
         From Julia 1.9 onwards, you can query `]why Formatting` to figure out which
         package originally brings it in as a dependency.
         """
