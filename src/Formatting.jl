@@ -8,7 +8,7 @@ module Formatting
         printfmt, printfmtln, fmt, format,
         sprintf1, generate_formatter
 
-    function __init__()
+    if ccall(:jl_generating_output, Cint, ()) == 1
         @warn """
         DEPRECATION NOTICE
 
