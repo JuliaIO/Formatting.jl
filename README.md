@@ -1,4 +1,5 @@
-**This package is unmaintained:** Active work is not occuring on this package. For an active fork of the package, see [Format.jl](https://github.com/JuliaString/Format.jl).
+> [!WARNING]
+> This package is unmaintained: Active work is not occuring on this package. For an active fork of the package, see [Format.jl](https://github.com/JuliaString/Format.jl).
 
 # Formatting
 
