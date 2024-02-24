@@ -1,10 +1,13 @@
+> [!WARNING]
+> This package is unmaintained: Active work is not occuring on this package. For an active fork of the package, see [Format.jl](https://github.com/JuliaString/Format.jl).
+
 # Formatting
 
 This package offers Python-style general formatting and c-style numerical formatting (for speed).
 
-| **PackageEvaluator**                                            | **Build Status**                                                                                |
-|:---------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
-|[![][pkg-0.6-img]][pkg-0.6-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
+| **PackageEvaluator**                                            | **Build Status**                                                                                | **Repo Status**
+|:---------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|:---------------------------------------------------------------:|
+|[![][pkg-0.6-img]][pkg-0.6-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] | [![Project Status: Unsupported – The project has reached a stable, usable state but the author(s) have ceased all work on it. A new maintainer may be desired.](https://www.repostatus.org/badges/latest/unsupported.svg)](https://www.repostatus.org/#unsupported) |
 
 
 [travis-img]: https://travis-ci.org/JuliaIO/Formatting.jl.svg?branch=master
