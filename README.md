@@ -1,5 +1,9 @@
 > [!WARNING]
-> This package is unmaintained: Active work is not occuring on this package. For an active fork of the package, see [Format.jl](https://github.com/JuliaString/Format.jl).
+> This package has been unmaintained for a while, and contains serious bugs.
+> [Format.jl](https://github.com/JuliaString/Format.jl) is a new version of this package
+> that supports a lot of new features and contains many bug fixes.
+> To update, replace every instance of `Formatting` with `Format`, 
+> replace `fmt` with `pyfmt`, and replace `sprintf1` with `cfmt`.
 
 # Formatting
 
